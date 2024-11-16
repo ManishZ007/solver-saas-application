@@ -128,6 +128,20 @@ const UserData = ({ user, user_post }: UserDataProps) => {
     }
   };
 
+  function truncateDescription(
+    description: string,
+    wordLimit: number = 8
+  ): string {
+    const words = description.split(" ");
+
+    if (words.length <= wordLimit) {
+      return description;
+    }
+
+    const truncatedWords = words.slice(0, wordLimit).join(" ");
+    return `${truncatedWords}...`;
+  }
+
   return (
     <section className="px-4 py-2 flex flex-col md:flex-row">
       <div className="p-3 flex  gap-4 flex-col items-center ">
@@ -250,7 +264,9 @@ const UserData = ({ user, user_post }: UserDataProps) => {
             <div className="flex flex-col gap-1 ">
               <p>{username}</p>
               <p className="text-muted-foreground text-sm">{title}</p>
-              <p className="text-muted-foreground text-sm">{description}</p>
+              <p className="text-muted-foreground text-sm">
+                {truncateDescription(description)}
+              </p>
             </div>
             <div>
               <Image

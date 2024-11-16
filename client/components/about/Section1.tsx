@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Separator } from "../ui/separator";
-import Section1Img from "@/assets/product.png";
+import Section1Img from "@/assets/useAI.png";
 import Image from "next/image";
 
 const Section1 = () => {

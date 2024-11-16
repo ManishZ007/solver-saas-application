@@ -1,10 +1,11 @@
 "use client";
 
-import { LayoutDashboardIcon } from "lucide-react";
+import { LayoutDashboardIcon, LogOutIcon } from "lucide-react";
 import React from "react";
 import { User, MessageSquare } from "lucide-react";
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 interface SidebarItem {
   id: number;
@@ -34,7 +35,7 @@ const Sidebar = () => {
   return (
     <div className="hidden md:block sticky top-0 left-0    h-full py-4 px-5">
       <div className="relative h-full">
-        <div className="flex flex-col items-start py-3 px-5 text-[15px]">
+        <div className="relative flex flex-col items-start py-3 px-5 text-[15px]">
           <div
             className="flex gap-3 items-center cursor-pointer"
             onClick={() => router.push("/dashboard")}
@@ -53,6 +54,12 @@ const Sidebar = () => {
               </div>
             ))}
           </ul>
+          <div
+            className="absolute top-[550px] flex gap-3 items-center cursor-pointer"
+            onClick={() => signOut()}
+          >
+            <LogOutIcon className="h-5 w-5" />
+          </div>
         </div>
       </div>
     </div>

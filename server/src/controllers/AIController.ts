@@ -1,15 +1,14 @@
 import { Request, Response } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import "dotenv/config";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 class AiController {
   static async question(request: Request, response: Response) {
     try {
-      const { prompt } = request.body;
-
+      const { prompt } = await request.body;
       console.log(prompt);
-      //   response.status(200).json(prompt);
-
       const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
       const model = genAI.getGenerativeModel({
@@ -17,6 +16,7 @@ class AiController {
       });
 
       const result = await model.generateContent(prompt);
+
       const res = await result.response;
 
       return response.json({ success: true, message: res.text() });

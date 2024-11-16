@@ -1,13 +1,16 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const generative_ai_1 = require("@google/generative-ai");
-require("dotenv/config");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 class AiController {
     static async question(request, response) {
         try {
-            const { prompt } = request.body;
+            const { prompt } = await request.body;
             console.log(prompt);
-            //   response.status(200).json(prompt);
             const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
             const model = genAI.getGenerativeModel({
                 model: "gemini-1.5-flash",

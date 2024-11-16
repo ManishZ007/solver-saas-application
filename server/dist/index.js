@@ -61,5 +61,5 @@ app.post("/create-post", upload.single("file"), PostController_1.default.create)
 app.post("/edit_profile", upload.single("profile"), UserController_1.default.editUserProfileImage);
 app.use("/api", index_1.default);
 httpServer.listen(PORT, () => {
-    console.log(`server is running on port:- ${PORT}`);
+    console.log(`server is running on port ${PORT}`);
 });
