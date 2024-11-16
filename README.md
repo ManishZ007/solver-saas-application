@@ -1,6 +1,11 @@
 <h1 align="center">Solver - AI-Powered Problem Solving Platform</h1>
 
+## 🖼️<a href="demo-project-img">Demo of Project</a>
+
+![alt text](https://github.com/ManishZ007/easy-authentication-prisma-postgres/blob/main/demo/Screenshot%202024-09-06%20011459.png)
+
 ## 🙋‍♂️<a href="introduction">Introduction</a>
+
 
 **Overview**
 
