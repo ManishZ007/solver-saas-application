@@ -17,6 +17,6 @@ The primary objective of Solver is to bridge the gap between community-driven pr
 
 **Frontend**
 
-- [React](https://react.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Shadcn UI](https://ui.shadcn.com/)
+- [React](https://react.dev/) TypeScript: For building interactive and type-safe user interfaces.
+- [Tailwind CSS](https://tailwindcss.com/) For utility-first CSS styling that provides responsiveness and customization.
+- [Shadcn UI](https://ui.shadcn.com/) For pre-built, customizable UI components.
