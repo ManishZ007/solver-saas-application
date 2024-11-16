@@ -16,7 +16,7 @@ Solver is an AI-powered SaaS platform designed to help developers solve coding p
 
 The primary objective of Solver is to bridge the gap between community-driven problem solving and AI assistance, empowering developers to tackle coding challenges in an efficient and collaborative manner. The platform aims to provide an easy-to-use, responsive interface where developers can quickly get the help they need, whether through community interaction or AI support. By offering these dual avenues for problem-solving, Solver helps developers save time, improve their coding skills, and grow within a collaborative environment.
 
-## ⚙️<a href="features">Features</a>
+## 💫 <a href="features">Features</a>
 
 **Solver comes with a variety of powerful features that cater to developers at all skill levels:**
 
