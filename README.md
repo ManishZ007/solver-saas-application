@@ -26,6 +26,11 @@ The primary objective of Solver is to bridge the gap between community-driven pr
 - [prisam](https://www.prisma.io/) 
 - [postgresql](https://www.postgresql.org/)
 
+**Authentication**
+-[NextAuth.js](https://next-auth.js.org/)
+
+##  🤩 <a href="gitHub-repository-starter">GitHub Repository Starter</a>
+This project leverages a GitHub repository for the authentication setup and responsive design, which serves as the starting point for Solver. You can find the repository [here](https://github.com/ManishZ007/easy-authentication-prisma-postgres).
 
 
 
