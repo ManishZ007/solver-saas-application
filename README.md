@@ -16,6 +16,21 @@ Solver is an AI-powered SaaS platform designed to help developers solve coding p
 
 The primary objective of Solver is to bridge the gap between community-driven problem solving and AI assistance, empowering developers to tackle coding challenges in an efficient and collaborative manner. The platform aims to provide an easy-to-use, responsive interface where developers can quickly get the help they need, whether through community interaction or AI support. By offering these dual avenues for problem-solving, Solver helps developers save time, improve their coding skills, and grow within a collaborative environment.
 
+## ⚙️<a href="features">Features</a>
+
+**Solver comes with a variety of powerful features that cater to developers at all skill levels:**
+
+- Community Help: Share coding problems with the community and receive solutions or suggestions from fellow developers.
+- AI Assistance: Use AI-powered solutions to solve your coding challenges by purchasing coins. The AI provides fast and accurate answers to help you progress.
+- Private & Public Post Options: Control the visibility of your coding problems. Choose to share them publicly to get help from the community, or keep them private for personal use or later reference.
+- Chat Groups: Create personalized chat groups for collaboration. Set a group name and password, and share it with others to communicate and work together on coding challenges.
+- OAuth Authentication: Secure login through Google or GitHub using NextAuth.js, allowing for easy account management and seamless access to the platform.
+- Responsive Design: The platform is fully responsive, providing an optimized experience across all device sizes using Tailwind CSS.
+- Database Integration: User data, problem posts, and solutions are stored and managed using Prisma with a PostgreSQL database for scalability and performance.
+- Customization: The platform is built with Shadcn UI components, which allows for easy customization and adaptability to various user needs.
+
+
+
 ## ⚙️<a href="techologies-used">Technologies Used</a>
 
 **Solver is built using modern technologies that enable a seamless, responsive, and efficient experience for developers. The platform utilizes the following technologies:**
