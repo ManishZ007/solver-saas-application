@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  username      String      @unique() @db.VarChar(100)
+  email         String      @unique
+  firstname     String      @db.VarChar(50)
+  lastname      String      @db.VarChar(50)
+  password      String      @default("null")
+  provider      String      @default("credentials")
+  oauth_id      String      @default("0")
+  profile_image String      @default("")
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt()
+  coin          Int         @default(0)
+  free_coin_use Boolean     @default(false)
+  ChatGroup     ChatGroup[]
+  Events        Events[]
+  Posts         Posts[]
+
+  @@map("users")
+}
+
+model ChatGroup {
+  id         String       @id @default(uuid()) @db.Uuid()
+  user       User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    String
+  title      String       @db.VarChar(191)
+  password   String       @db.VarChar(30)
+  created_at DateTime     @default(now())
+  GroupUsers GroupUsers[]
+  Chats      Chats[]
+
+  @@index([created_at])
+  @@map("chat_group")
+}
+
+model GroupUsers {
+  id         Int       @id @default(autoincrement())
+  group      ChatGroup @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  group_id   String    @db.Uuid()
+  username   String
+  created_at DateTime  @default(now())
+
+  @@map("group_users")
+}
+
+model Chats {
+  id         String    @id @default(uuid()) @db.Uuid
+  group      ChatGroup @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  group_id   String    @db.Uuid()
+  message    String?
+  username   String
+  created_at DateTime  @default(now())
+
+  @@index([created_at])
+  @@map("chats")
+}
+
+model Events {
+  id            String   @id @default(uuid())
+  title         String   @db.VarChar(100)
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id       String
+  date_of_event DateTime
+  created_at    DateTime @default(now())
+
+  @@index([created_at])
+  @@map("event")
+}
+
+model Posts {
+  id            String      @id @default(uuid())
+  username      String      @default("")
+  profile_image String      @default("")
+  title         String      @default("")
+  description   String      @default("")
+  post_image    String
+  user          User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id       String
+  created_at    DateTime    @default(now())
+  publish       Boolean     @default(true)
+  Solutions     Solutions[]
+
+  @@index([created_at])
+  @@map("posts")
+}
+
+model Solutions {
+  id         String    @id @default(uuid())
+  username   String    @default("")
+  solution   String
+  post       Posts     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id    String
+  created_at DateTime  @default(now())
+  Ratings    Ratings[]
+
+  @@map("solutions")
+}
+
+model Ratings {
+  id          String    @id @default(uuid())
+  solution    Solutions @relation(fields: [solution_id], references: [id], onDelete: Cascade)
+  solution_id String
+  user_id     String
+  created_at  DateTime  @default(now())
+
+  @@map("ratings")
+}
