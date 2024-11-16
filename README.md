@@ -2,7 +2,7 @@
 
 ## 🖼️<a href="demo-project-img">Demo of Project</a>
 
-![alt text]([https://github.com/ManishZ007/easy-authentication-prisma-postgres/blob/main/demo/Screenshot%202024-09-06%20011459.png](https://github.com/ManishZ007/solver-saas-application/blob/main/client/assets/useAI.png))
+![alt text](https://github.com/ManishZ007/solver-saas-application/blob/main/client/assets/useAI.png)
 
 ## 🙋‍♂️<a href="introduction">Introduction</a>
 
