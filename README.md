@@ -22,9 +22,9 @@ The primary objective of Solver is to bridge the gap between community-driven pr
 - [Shadcn UI](https://ui.shadcn.com/)
 
 **Backend**
-- [Nodejs](https://react.dev/) 
-- [prisam](https://tailwindcss.com/) 
-- [postgres sql](https://ui.shadcn.com/)
+- [Nodejs](https://nodejs.org/en) 
+- [prisam](https://www.prisma.io/) 
+- [postgresql](https://www.postgresql.org/)
 
 
 
