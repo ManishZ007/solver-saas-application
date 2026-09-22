@@ -19,12 +19,13 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const PostController_1 = __importDefault(require("./controllers/PostController"));
 const UserController_1 = __importDefault(require("./controllers/UserController"));
+const prisma_1 = __importDefault(require("./config/prisma"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 8000;
 const httpServer = (0, http_1.createServer)(app);
 const io = new socket_io_1.Server(httpServer, {
     cors: {
-        origin: ["https://admin.socket.io", "http://localhost:3000"],
+        origin: ["https://admin.socket.io", "http://localhost:3000", "http://localhost:3002"],
         credentials: true,
     },
     adapter: (0, redis_streams_adapter_1.createAdapter)(redis_1.default),
@@ -56,6 +57,29 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "/uploads")));
+// Rating toggle — inline route (no dist recompile needed)
+app.post("/api/rating/toggle", async (req, res) => {
+    try {
+        const { user_id, solution_id } = req.body;
+        if (!user_id || !solution_id) {
+            return res.status(400).json({ success: false, message: "Missing user_id or solution_id" });
+        }
+        const existing = await prisma_1.default.ratings.findFirst({ where: { user_id, solution_id } });
+        if (existing) {
+            await prisma_1.default.ratings.delete({ where: { id: existing.id } });
+            const count = await prisma_1.default.ratings.count({ where: { solution_id } });
+            return res.json({ success: true, rated: false, count });
+        }
+        else {
+            await prisma_1.default.ratings.create({ data: { user_id, solution_id } });
+            const count = await prisma_1.default.ratings.count({ where: { solution_id } });
+            return res.json({ success: true, rated: true, count });
+        }
+    }
+    catch (error) {
+        return res.status(500).json({ success: false, message: "Something went wrong" });
+    }
+});
 // Router
 app.post("/create-post", upload.single("file"), PostController_1.default.create);
 app.post("/edit_profile", upload.single("profile"), UserController_1.default.editUserProfileImage);

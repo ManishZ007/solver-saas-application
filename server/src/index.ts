@@ -1,4 +1,4 @@
-import express, { Application, Request } from "express";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import "dotenv/config";
 import Routers from "./routes/index";
@@ -13,13 +13,14 @@ import path from "path";
 import fs from "fs";
 import PostController from "./controllers/PostController";
 import UserController from "./controllers/UserController";
+import prisma from "./config/prisma";
 
 const app: Application = express();
 const PORT = process.env.PORT || 8000;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["https://admin.socket.io", "http://localhost:3000"],
+    origin: ["https://admin.socket.io", "http://localhost:3000", "http://localhost:3002"],
     credentials: true,
   },
   adapter: createAdapter(redis),
@@ -64,6 +65,28 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+
+// Rating toggle — inline route (no dist recompile needed)
+app.post("/api/rating/toggle", async (req: Request, res: Response) => {
+  try {
+    const { user_id, solution_id } = req.body;
+    if (!user_id || !solution_id) {
+      return res.status(400).json({ success: false, message: "Missing user_id or solution_id" });
+    }
+    const existing = await prisma.ratings.findFirst({ where: { user_id, solution_id } });
+    if (existing) {
+      await prisma.ratings.delete({ where: { id: existing.id } });
+      const count = await prisma.ratings.count({ where: { solution_id } });
+      return res.json({ success: true, rated: false, count });
+    } else {
+      await prisma.ratings.create({ data: { user_id, solution_id } });
+      const count = await prisma.ratings.count({ where: { solution_id } });
+      return res.json({ success: true, rated: true, count });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+});
 
 // Router
 app.post("/create-post", upload.single("file"), PostController.create);

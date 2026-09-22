@@ -14,23 +14,36 @@ function setUpSocket(io) {
     io.on("connection", (socket) => {
         console.log("client connected", socket.id);
         socket.on("send-rating", async (data) => {
-            const findIsDataPresent = await prisma_1.default.ratings.findFirst({
-                where: {
-                    user_id: data.user_id,
-                    solution_id: data.solution_id,
-                },
-            });
-            if (findIsDataPresent) {
-                await prisma_1.default.ratings.delete({
+            try {
+                if (!data.user_id || !data.solution_id) {
+                    socket.emit("rating-error", "Missing user_id or solution_id");
+                    return;
+                }
+                const findIsDataPresent = await prisma_1.default.ratings.findFirst({
                     where: {
-                        id: findIsDataPresent.id,
+                        user_id: data.user_id,
+                        solution_id: data.solution_id,
                     },
                 });
-                socket.emit("remove-solution-rating", data.solution_id);
+                if (findIsDataPresent) {
+                    await prisma_1.default.ratings.delete({
+                        where: { id: findIsDataPresent.id },
+                    });
+                    socket.emit("remove-solution-rating", data.solution_id);
+                }
+                else {
+                    await prisma_1.default.ratings.create({
+                        data: {
+                            user_id: data.user_id,
+                            solution_id: data.solution_id,
+                        },
+                    });
+                    socket.emit("recive-solutionId", data.solution_id);
+                }
             }
-            else {
-                await prisma_1.default.ratings.create({ data: data });
-                socket.emit("recive-solutionId", data.solution_id);
+            catch (error) {
+                console.error("send-rating error:", error);
+                socket.emit("rating-error", "Failed to process rating");
             }
         });
         // * Join room

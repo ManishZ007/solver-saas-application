@@ -14,8 +14,6 @@ const SolutionController_1 = __importDefault(require("../controllers/SolutionCon
 const RatingsController_1 = __importDefault(require("../controllers/RatingsController"));
 const UserController_1 = __importDefault(require("../controllers/UserController"));
 const AIController_1 = __importDefault(require("../controllers/AIController"));
-const CoinController_1 = __importDefault(require("../controllers/CoinController"));
-const PaymentContoller_1 = __importDefault(require("../controllers/PaymentContoller"));
 const router = (0, express_1.Router)();
 // authentication
 router.post("/auth/createUser", Authcontrollers_1.default.createUser);
@@ -37,6 +35,8 @@ router.get("/all-chats", ChatController_1.default.getAllChats);
 //Events
 router.get("/event", EventController_1.default.index);
 router.post("/event", EventController_1.default.store);
+router.put("/event/:id", EventController_1.default.update);
+router.delete("/event/:id", EventController_1.default.destroy);
 //Posts
 router.get("/posts", PostController_1.default.index);
 router.get("/post", PostController_1.default.sort);
@@ -45,13 +45,10 @@ router.get("/single-post", PostController_1.default.single);
 router.post("/solution", SolutionController_1.default.create);
 //Rating
 router.post("/rating", RatingsController_1.default.create);
+router.post("/rating/toggle", RatingsController_1.default.toggle);
 router.get("/rating/:user_id", RatingsController_1.default.index);
 //User profile
 router.post("/update-profile", UserController_1.default.updateUser);
 //Ai
 router.post("/ai-response", AIController_1.default.question);
-//Creditting Coin
-router.post("/credit-free-coin", CoinController_1.default.freeuse);
-//Payment
-router.post("/create-payment-intent", PaymentContoller_1.default.client_secret);
 exports.default = router;

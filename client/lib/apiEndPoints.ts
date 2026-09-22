@@ -27,6 +27,8 @@ export const GET_ALL_CHATS = API_URL + "/all-chats";
 //event
 export const CREATE_EVENT = API_URL + "/event";
 export const GET_ALL_EVENT = API_URL + "/event";
+export const UPDATE_EVENT = API_URL + "/event";
+export const DELETE_EVENT = API_URL + "/event";
 
 //posts
 export const FETCH_ALL_POSTS = API_URL + "/posts";
@@ -39,6 +41,7 @@ export const POST_IMAGE_ENDPOINT = BASE_URL + "/uploads";
 
 //Rating handling
 export const RATING_ON_SOLUTION = API_URL + "/rating";
+export const RATING_TOGGLE = API_URL + "/rating/toggle";
 export const FETCH_ALL_USER_RATING = API_URL + "/rating";
 
 //Solution handling

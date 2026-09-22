@@ -1,14 +1,12 @@
 "use client";
 
-import { POST_IMAGE_ENDPOINT, SOLUTION_HANDLING } from "@/lib/apiEndPoints";
+import { POST_IMAGE_ENDPOINT, RATING_TOGGLE, SOLUTION_HANDLING } from "@/lib/apiEndPoints";
 import { ChevronUp, ChevronDown, ThumbsUp, SendHorizonal } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Separator } from "../ui/separator";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "../ui/button";
-// import { toast } from "sonner";
-import { getSocket } from "@/lib/socket.config";
 import { Input } from "../ui/input";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
@@ -23,55 +21,57 @@ type PostProps = {
 const Post = ({ post, user }: PostProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [solutionsId, setSolutionsId] = useState<Array<string> | []>([]);
+  const [ratingCounts, setRatingCounts] = useState<Record<string, number>>({});
   const [solution, setSolution] = useState<string>("");
 
   useEffect(() => {
     const userRatedsolutions: string[] = [];
+    const counts: Record<string, number> = {};
 
     post?.Solutions?.forEach((solution: SolutionType) => {
+      counts[solution.id] = solution.Ratings?.length ?? 0;
       const hasUserRated = solution.Ratings?.some(
         (rating: RatingsType) => rating.user_id === user?.id
       );
-
       if (hasUserRated) {
         userRatedsolutions.push(solution.id.toString());
       }
     });
 
     setSolutionsId(userRatedsolutions);
+    setRatingCounts(counts);
   }, []);
 
   const hasUserRatedThisSolution = (solution_id: string) => {
-    return solutionsId.some((solution) => solution === solution_id);
+    return solutionsId.some((id) => id === solution_id);
   };
 
-  const socket = useMemo(() => {
-    const socket = getSocket();
-
-    return socket.connect();
-  }, []);
-
-  useEffect(() => {
-    socket.on("remove-solution-rating", (data: string) => {
-      setSolutionsId((prevIds) => prevIds.filter((id) => id !== data));
-    });
-
-    socket.on("recive-solutionId", (data: string) => {
-      setSolutionsId((prevSolutionId) => [...prevSolutionId, data]);
-    });
-
-    return () => {
-      socket.close();
-    };
-  }, []);
-
   const handleGiveARating = async (solution?: SolutionType) => {
-    const paylaod = {
-      user_id: user?.id,
-      solution_id: solution?.id,
-    };
-
-    socket.emit("send-rating", paylaod);
+    if (!user?.id) {
+      toast.error("You must be logged in to rate.");
+      return;
+    }
+    try {
+      const res = await axios.post<{ success: boolean; rated: boolean; count: number }>(
+        RATING_TOGGLE,
+        { user_id: user.id, solution_id: solution?.id }
+      );
+      if (res.data.success) {
+        const sid = solution?.id as string;
+        if (res.data.rated) {
+          setSolutionsId((prev) => [...prev, sid]);
+        } else {
+          setSolutionsId((prev) => prev.filter((id) => id !== sid));
+        }
+        setRatingCounts((prev) => ({ ...prev, [sid]: res.data.count }));
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message ?? error.message);
+      } else {
+        toast.error("Failed to submit rating. Please try again.");
+      }
+    }
   };
 
   const handleSubmitSolution = async (post_id?: string) => {
@@ -195,9 +195,7 @@ const Post = ({ post, user }: PostProps) => {
                         />
                       </Button>
 
-                      <p>
-                        {solutionsId.filter((id) => id === solution.id).length}
-                      </p>
+                      <p>{ratingCounts[solution.id] ?? 0}</p>
                     </div>
                     <Separator className="my-2" />
                   </div>

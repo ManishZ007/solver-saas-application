@@ -32,6 +32,30 @@ class RatingsController {
             });
         }
     }
+    static async toggle(request, response) {
+        try {
+            const { user_id, solution_id } = request.body;
+            if (!user_id || !solution_id) {
+                return response.status(400).json({ success: false, message: "Missing user_id or solution_id" });
+            }
+            const existing = await prisma_1.default.ratings.findFirst({
+                where: { user_id, solution_id },
+            });
+            if (existing) {
+                await prisma_1.default.ratings.delete({ where: { id: existing.id } });
+                const count = await prisma_1.default.ratings.count({ where: { solution_id } });
+                return response.json({ success: true, rated: false, count });
+            }
+            else {
+                await prisma_1.default.ratings.create({ data: { user_id, solution_id } });
+                const count = await prisma_1.default.ratings.count({ where: { solution_id } });
+                return response.json({ success: true, rated: true, count });
+            }
+        }
+        catch (error) {
+            return response.status(500).json({ success: false, message: "Something went wrong" });
+        }
+    }
     static async index(request, response) {
         try {
             const { user_id } = request.params;

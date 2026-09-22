@@ -38,6 +38,8 @@ router.get("/all-chats", ChatController.getAllChats);
 //Events
 router.get("/event", EventController.index);
 router.post("/event", EventController.store);
+router.put("/event/:id", EventController.update);
+router.delete("/event/:id", EventController.destroy);
 
 //Posts
 router.get("/posts", PostController.index);
@@ -49,6 +51,7 @@ router.post("/solution", SolutionController.create);
 
 //Rating
 router.post("/rating", RatingsController.create);
+router.post("/rating/toggle", RatingsController.toggle);
 router.get("/rating/:user_id", RatingsController.index);
 
 //User profile
