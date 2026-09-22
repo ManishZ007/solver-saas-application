@@ -10,7 +10,6 @@ import Link from "next/link";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { signIn } from "next-auth/react";
 import { ApiResponse } from "@/types/ApiResponse";
 import { SignUpSchema, TSignUpSchema } from "@/lib/validations/userSchema";
 import useDebounce from "@/hooks/use-debounce";
@@ -118,35 +117,11 @@ const SignIn = () => {
       <div className=" w-full flex items-center justify-center">
         <div className="py-3 px-5 flex flex-col justify-center items-center w-[360px]">
           <div className="w-full flex flex-col gap-1 items-center justify-center">
-            <Circle className="h-5 w-5 mb-4 " />
-            {/*Add you'r logo here  */}
+            <Circle className="h-5 w-5 mb-4" />
             <p className="font-bold text-xl">Create your account</p>
             <p className="text-muted-foreground text-sm">
               Welcome! Please fill in the details to get started.
             </p>
-
-            <div className="mt-4 w-full flex gap-2 justify-center">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={async () => {
-                  await signIn("google");
-                  router.push("/");
-                }}
-              >
-                Google
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={async () => {
-                  await signIn("github");
-                  router.push("/");
-                }}
-              >
-                GitHub
-              </Button>
-            </div>
           </div>
           <Separator className="my-6" />
           <form onSubmit={handleSubmit(onSubmit)} className="w-full">

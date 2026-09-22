@@ -15,7 +15,6 @@ import {
   LogOut,
   Moon,
   Sun,
-  Tags,
   User,
   Users,
 } from "lucide-react";
@@ -35,11 +34,6 @@ const mobileNavbarItems = [
     label: "About",
     icon: <Users className="h-4 w-4" />,
     link: "/about",
-  },
-  {
-    label: "Pricing",
-    icon: <Tags className="h-4 w-4" />,
-    link: "/pricing",
   },
   {
     label: "Dashboard",

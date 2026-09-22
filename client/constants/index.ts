@@ -1,8 +1,7 @@
 export const navItems = [
   { path: "/", label: "Home", index: 1 },
   { path: "/dashboard", label: "Dashboard", index: 2 },
-  { path: "/pricing", label: "Pricing", index: 3 },
-  { path: "/about", label: "About", index: 4 },
+  { path: "/about", label: "About", index: 3 },
 ];
 
 export const authItems = [
@@ -118,53 +117,3 @@ export const aboutKeyFeature = [
   },
 ];
 
-export const pricingPlans = [
-  {
-    name: "Free",
-    price: "$0",
-    popular: false,
-    features: [
-      "1 chat group",
-      "5 GB storage",
-      "10 posts per month",
-      "5 tasks and 1 project",
-      "Basic security features",
-      "AI access credits 3",
-    ],
-    buttonText: "Get Started Free",
-  },
-  {
-    name: "Pro",
-    price: "$15",
-    popular: true,
-    features: [
-      "Up to 3 chat groups",
-      "100 GB storage",
-      "100 posts per month",
-      "Full community support",
-      "Unlimited tasks and 10 projects",
-      "Standard analytics",
-      "Enhanced security features",
-      "AI access credits 10",
-    ],
-    buttonText: "Upgrade to Pro",
-  },
-  {
-    name: "Premium",
-    price: "$30",
-    popular: false,
-    features: [
-      "Up to 5 chat groups",
-      "Unlimited storage",
-      "Unlimited posts",
-      "Full community support",
-      "Integrations",
-      "Unlimited tasks and projects",
-      "Advanced analytics",
-      "Advanced security features",
-      "AI access",
-      "AI access credits 50",
-    ],
-    buttonText: "Get Premium Access",
-  },
-];

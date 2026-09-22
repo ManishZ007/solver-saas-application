@@ -6,7 +6,6 @@ import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import {
   AI_RESPONSE_URL,
-  CREDIT_FREE_COIN_URL,
   POST_IMAGE_ENDPOINT,
   SINGLE_POST,
 } from "@/lib/apiEndPoints";
@@ -27,7 +26,7 @@ const Post = () => {
   const [userQuestion, setUserQuestion] = useState<string>("");
   const [aiResponse, setAiResponse] = useState<string | undefined>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
 
   async function performOCR(imagePath: string): Promise<string> {
     try {
@@ -66,54 +65,28 @@ const Post = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      if (Number(session?.user?.coin) > 0) {
-        await performOCR(`${POST_IMAGE_ENDPOINT}/${post?.post_image}`)
-          .then((result) => {
-            setOCRResponse(result);
-            console.log(result);
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
+      await performOCR(`${POST_IMAGE_ENDPOINT}/${post?.post_image}`)
+        .then((result) => {
+          setOCRResponse(result);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
 
-        const payload = {
-          prompt: userQuestion + ", " + "image content is" + " " + OCRResponse,
-        };
+      const payload = {
+        prompt: userQuestion + ", " + "image content is" + " " + OCRResponse,
+      };
 
-        const resposne = await axios.post<ApiResponse>(
-          AI_RESPONSE_URL,
-          payload
-        );
-        setAiResponse(resposne?.data?.message);
-        setLoading(false);
-
-        const payloadCoinMinus = {
-          coin: Number(session?.user.coin) - 1,
-        };
-
-        const coinminusResponse = await axios.post<ApiResponse>(
-          `${CREDIT_FREE_COIN_URL}/?user_id=${session?.user?.id}`,
-          payloadCoinMinus
-        );
-
-        if (coinminusResponse.data.success) {
-          const updatePayload = {
-            coin: coinminusResponse.data.data?.coin,
-            free_coin_use: coinminusResponse.data.data?.free_coin_use,
-          };
-          await update(updatePayload);
-
-          toast.success(`${session?.user.coin} remaining`);
-        }
-      } else {
-        toast.error("use dont have coins");
-      }
+      const resposne = await axios.post<ApiResponse>(AI_RESPONSE_URL, payload);
+      setAiResponse(resposne?.data?.message);
     } catch (error) {
       if (error instanceof AxiosError) {
         toast.error(error.message);
       } else {
         toast.error("something went wrong!");
       }
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -10,6 +10,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { Circle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { signInSchema, TSignInSchema } from "@/lib/validations/userSchema";
 
 const SignIn = () => {
@@ -23,46 +24,29 @@ const SignIn = () => {
   });
 
   const onSubmit = async (data: TSignInSchema) => {
-    await signIn("credentials", {
+    const result = await signIn("credentials", {
       identifier: data.identifier,
+      redirect: false,
     });
 
-    router.push("/");
+    if (result?.error) {
+      toast.error("Invalid credentials. Please try again.");
+      return;
+    }
+
+    router.push("/dashboard");
   };
 
   return (
     <section className="container">
-      <div className=" w-full flex items-center justify-center">
+      <div className="w-full flex items-center justify-center">
         <div className="py-3 px-5 flex flex-col justify-center items-center w-[360px]">
-          <div className=" w-full flex flex-col gap-1 items-center justify-center">
-            <Circle className="h-5 w-5 mb-4 " />
-            {/*Add you'r logo here  */}
+          <div className="w-full flex flex-col gap-1 items-center justify-center">
+            <Circle className="h-5 w-5 mb-4" />
             <p className="font-bold text-xl">Sign in</p>
             <p className="text-muted-foreground text-sm">
               Welcome back! Please sign in to continue
             </p>
-            <div className="mt-4 w-full flex gap-2 justify-center">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={async () => {
-                  await signIn("google");
-                  router.push("/");
-                }}
-              >
-                Google
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={async () => {
-                  await signIn("github");
-                  router.push("/");
-                }}
-              >
-                GitHub
-              </Button>
-            </div>
           </div>
           <Separator className="my-6" />
           <form onSubmit={handleSubmit(onSubmit)} className="w-full">
@@ -77,7 +61,6 @@ const SignIn = () => {
             </div>
           </form>
           <Separator className="my-6" />
-
           <div className="w-full text-center flex gap-1 items-center justify-center">
             <p className="text-sm text-muted-foreground">
               Don&apos;t have an account?
