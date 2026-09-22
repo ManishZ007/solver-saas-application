@@ -16,7 +16,7 @@ import {
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { Edit2, Loader2, Loader2Icon } from "lucide-react";
+import { Edit2, Loader2, Loader2Icon, User2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -147,13 +147,19 @@ const UserData = ({ user, user_post }: UserDataProps) => {
       <div className="p-3 flex  gap-4 flex-col items-center ">
         <div className="flex flex-row gap-4 md:flex-col">
           <div className="relative">
-            <Image
-              src={!user?.profile_image ? user?.image : user?.profile_image}
-              alt="user profile"
-              width={150}
-              height={150}
-              className=" h-auto w-[250px] bg-cover rounded-full outline outline-1 outline-gray-500"
-            />
+            {user?.profile_image ? (
+              <Image
+                src={user.profile_image}
+                alt="user profile"
+                width={150}
+                height={150}
+                className="h-auto w-[250px] bg-cover rounded-full outline outline-1 outline-gray-500"
+              />
+            ) : (
+              <div className="h-[150px] w-[150px] rounded-full outline outline-1 outline-gray-500 flex items-center justify-center bg-muted">
+                <User2 className="h-16 w-16 text-muted-foreground" />
+              </div>
+            )}
             <span
               className="absolute right-10 bottom-0 cursor-pointer "
               onClick={() => console.log("edit profile pic")}
@@ -171,9 +177,6 @@ const UserData = ({ user, user_post }: UserDataProps) => {
             </p>
             <p className="text-sm text-muted-foreground">
               {session?.user?.email}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              coins {session?.user?.coin}
             </p>
           </div>
         </div>

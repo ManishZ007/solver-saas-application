@@ -9,10 +9,6 @@ import SolutionController from "../controllers/SolutionController";
 import RatingsController from "../controllers/RatingsController";
 import UserController from "../controllers/UserController";
 import AiController from "../controllers/AIController";
-import { resourceLimits } from "worker_threads";
-import coinController from "../controllers/CoinController";
-import paymentController from "../controllers/PaymentContoller";
-
 const router = Router();
 
 // authentication
@@ -60,11 +56,5 @@ router.post("/update-profile", UserController.updateUser);
 
 //Ai
 router.post("/ai-response", AiController.question);
-
-//Creditting Coin
-router.post("/credit-free-coin", coinController.freeuse);
-
-//Payment
-router.post("/create-payment-intent", paymentController.client_secret);
 
 export default router;
