@@ -35,6 +35,8 @@ export const FETCH_ALL_POSTS = API_URL + "/posts";
 export const CREATE_POST = BASE_URL + "/create-post";
 export const FETCH_USER_POST = API_URL + "/post";
 export const SINGLE_POST = API_URL + "/single-post";
+export const UPDATE_POST = API_URL + "/post";
+export const DELETE_POST = API_URL + "/post";
 
 //post image endpoint
 export const POST_IMAGE_ENDPOINT = BASE_URL + "/uploads";

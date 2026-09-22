@@ -45,6 +45,8 @@ router.delete("/event/:id", EventController.destroy);
 router.get("/posts", PostController.index);
 router.get("/post", PostController.sort);
 router.get("/single-post", PostController.single);
+router.put("/post/:id", PostController.update);
+router.delete("/post/:id", PostController.destroy);
 
 //Solutions
 router.post("/solution", SolutionController.create);

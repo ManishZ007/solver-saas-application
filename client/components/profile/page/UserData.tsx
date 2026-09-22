@@ -16,13 +16,16 @@ import {
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { Edit2, Loader2, Loader2Icon, User2 } from "lucide-react";
+import { Edit2, Loader2, Loader2Icon, Pencil, Trash2, User2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { DELETE_POST } from "@/lib/apiEndPoints";
+import { clearCache } from "@/actions/comman";
+import EditPostDialog from "../dialogs/EditPostDialog";
 
 type UserDataProps = {
   user?: User;
@@ -36,6 +39,7 @@ type UserDataType = {
 
 const UserData = ({ user, user_post }: UserDataProps) => {
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
+  const [editingPost, setEditingPost] = useState<PostType | null>(null);
   const [userData, setUserData] = useState<UserDataType>({
     username: user?.username,
     email: user?.email,
@@ -124,6 +128,23 @@ const UserData = ({ user, user_post }: UserDataProps) => {
         toast.error(error.message);
       } else {
         toast.error("somthing went wrong");
+      }
+    }
+  };
+
+  const handleDeletePost = async (id: string) => {
+    try {
+      const response = await axios.delete<ApiResponse>(`${DELETE_POST}/${id}`);
+      if (response.data.success) {
+        toast.success(response.data.message);
+        clearCache("user_post");
+        router.refresh();
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error.message);
       }
     }
   };
@@ -258,31 +279,58 @@ const UserData = ({ user, user_post }: UserDataProps) => {
       </div>
 
       <div className="py-2 px-4 grid grid-cols-1 gap-4 md:grid-cols-2 ">
-        {user_post?.map(({ description, id, title, username, post_image }) => (
-          <div
-            className="p-2 flex gap-4 cursor-pointer"
-            key={id}
-            onClick={() => router.push(`/dashboard/profile/post/${id}`)}
-          >
-            <div className="flex flex-col gap-1 ">
-              <p>{username}</p>
-              <p className="text-muted-foreground text-sm">{title}</p>
+        {user_post?.map((post) => (
+          <div className="p-2 flex gap-4 border rounded-md" key={post.id}>
+            <div
+              className="flex flex-col gap-1 flex-1 cursor-pointer"
+              onClick={() => router.push(`/dashboard/profile/post/${post.id}`)}
+            >
+              <p>{post.username}</p>
+              <p className="text-muted-foreground text-sm">{post.title}</p>
               <p className="text-muted-foreground text-sm">
-                {truncateDescription(description)}
+                {truncateDescription(post.description)}
               </p>
+              <div className="flex gap-3 mt-1">
+                <button
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingPost(post);
+                  }}
+                >
+                  <Pencil className="h-3 w-3" /> Edit
+                </button>
+                <button
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-red-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeletePost(post.id);
+                  }}
+                >
+                  <Trash2 className="h-3 w-3" /> Delete
+                </button>
+              </div>
             </div>
             <div>
               <Image
                 width={150}
                 height={150}
-                className=" hidden md:block w-[160px] h-auto rounded-md"
-                src={`${POST_IMAGE_ENDPOINT}/${post_image}`}
+                className="hidden md:block w-[160px] h-auto rounded-md"
+                src={`${POST_IMAGE_ENDPOINT}/${post.post_image}`}
                 alt="post image"
               />
             </div>
           </div>
         ))}
       </div>
+
+      {editingPost && (
+        <EditPostDialog
+          open={!!editingPost}
+          post={editingPost}
+          onClose={() => setEditingPost(null)}
+        />
+      )}
     </section>
   );
 };

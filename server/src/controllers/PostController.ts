@@ -139,6 +139,32 @@ class PostController {
       });
     }
   }
+
+  static async update(request: Request, response: Response) {
+    try {
+      const { id } = request.params;
+      const { title, description } = request.body;
+
+      const updated = await prisma.posts.update({
+        where: { id },
+        data: { title, description },
+      });
+
+      return response.json({ success: true, message: "Post updated successfully", post: updated });
+    } catch (error) {
+      return response.status(500).json({ success: false, message: "Something went wrong!" });
+    }
+  }
+
+  static async destroy(request: Request, response: Response) {
+    try {
+      const { id } = request.params;
+      await prisma.posts.delete({ where: { id } });
+      return response.json({ success: true, message: "Post deleted successfully" });
+    } catch (error) {
+      return response.status(500).json({ success: false, message: "Something went wrong!" });
+    }
+  }
 }
 
 export default PostController;
