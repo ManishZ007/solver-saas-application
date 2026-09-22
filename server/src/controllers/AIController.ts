@@ -1,29 +1,47 @@
 import { Request, Response } from "express";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import dotenv from "dotenv";
-
-dotenv.config();
+import axios from "axios";
 
 class AiController {
   static async question(request: Request, response: Response) {
     try {
-      const { prompt } = await request.body;
-      console.log(prompt);
-      const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+      const { prompt } = request.body;
+      console.log("Prompt:", prompt);
 
-      const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
+      if (!prompt) {
+        return response.status(400).json({
+          success: false,
+          message: "Prompt is required.",
+        });
+      }
+
+      // Send request to Ollama local API
+      const ollamaResponse = await axios.post(
+        "http://localhost:11434/api/generate",
+        {
+          model: "llama3:latest", // model name you downloaded
+          prompt: prompt, // your user prompt
+          stream: false,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      const message =
+        ollamaResponse.data?.response || "No response from Ollama.";
+
+      console.log(message);
+
+      // Ollama streams responses, so 'response' property contains final output
+      return response.json({
+        success: true,
+        message,
       });
-
-      const result = await model.generateContent(prompt);
-
-      const res = await result.response;
-
-      return response.json({ success: true, message: res.text() });
-    } catch (error) {
-      return response.json(500).json({
+    } catch (error: any) {
+      console.error("Ollama Error:", error?.message || error);
+      return response.status(500).json({
         success: false,
-        message: "somthing went wrong please try again letter!",
+        message: "Something went wrong, please try again later!",
       });
     }
   }

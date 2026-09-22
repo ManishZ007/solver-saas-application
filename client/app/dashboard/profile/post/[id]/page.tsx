@@ -42,6 +42,8 @@ const Post = () => {
     }
   }
 
+  console.log("hello");
+
   useEffect(() => {
     const fetchPostData = async () => {
       try {
@@ -68,6 +70,7 @@ const Post = () => {
         await performOCR(`${POST_IMAGE_ENDPOINT}/${post?.post_image}`)
           .then((result) => {
             setOCRResponse(result);
+            console.log(result);
           })
           .catch((error) => {
             console.error("Error:", error);
