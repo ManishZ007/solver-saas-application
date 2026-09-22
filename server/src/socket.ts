@@ -61,6 +61,11 @@ export function setUpSocket(io: Server) {
       io.to(socket.room).emit("recive-message", data);
     });
 
+    // Live code sync — broadcast to everyone else in the room
+    socket.on("code-change", (data: { code: string; language: string }) => {
+      socket.to(socket.room).emit("code-update", data);
+    });
+
     socket.on("disconnect", () => {
       console.log("A user disconnect", socket.id);
     });

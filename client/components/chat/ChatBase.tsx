@@ -15,6 +15,10 @@ const ChatBase = ({ group, oldMessage }: ChatBaseProps) => {
   const [chatUser, setChatUser] = useState<GroupChatUserType>();
 
   const handleValidUser = () => {
+    const data = localStorage.getItem(group.id as string);
+    if (data) {
+      setChatUser(JSON.parse(data));
+    }
     setOpen(!open);
   };
 

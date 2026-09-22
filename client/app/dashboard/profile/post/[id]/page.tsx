@@ -65,23 +65,18 @@ const Post = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await performOCR(`${POST_IMAGE_ENDPOINT}/${post?.post_image}`)
-        .then((result) => {
-          setOCRResponse(result);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+      const ocrText = await performOCR(`${POST_IMAGE_ENDPOINT}/${post?.post_image}`);
+      setOCRResponse(ocrText);
 
       const payload = {
-        prompt: userQuestion + ", " + "image content is" + " " + OCRResponse,
+        prompt: userQuestion + ", image content is: " + ocrText,
       };
 
       const resposne = await axios.post<ApiResponse>(AI_RESPONSE_URL, payload);
       setAiResponse(resposne?.data?.message);
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.error(error.message);
+        toast.error(error.response?.data?.message ?? error.message);
       } else {
         toast.error("something went wrong!");
       }

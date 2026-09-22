@@ -20,7 +20,7 @@ import axios, { AxiosError } from "axios";
 import { STORE_CHAT_GROUP_USER } from "@/lib/apiEndPoints";
 import { FetchChatGroups } from "@/types/ApiResponse";
 import { useParams } from "next/navigation";
-// import { clearCache } from "@/actions/comman";
+import { clearCache } from "@/actions/comman";
 
 type ValidUserDialogProps = {
   handleValidUser: () => void;
@@ -65,7 +65,7 @@ const ValidUserDialog = ({
           params["id"] as string,
           JSON.stringify(res?.data?.user)
         );
-        // clearCache("chat-group-user");
+        clearCache("chat-group-user");
       } catch (error) {
         if (error instanceof AxiosError) {
           toast.error(error.message);

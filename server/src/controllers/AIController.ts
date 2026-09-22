@@ -1,48 +1,44 @@
 import { Request, Response } from "express";
-import axios from "axios";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 class AiController {
   static async question(request: Request, response: Response) {
-    try {
-      const { prompt } = request.body;
-      console.log("Prompt:", prompt);
+    const { prompt } = request.body;
 
-      if (!prompt) {
-        return response.status(400).json({
-          success: false,
-          message: "Prompt is required.",
-        });
-      }
+    if (!prompt) {
+      return response.status(400).json({ success: false, message: "Prompt is required." });
+    }
 
-      // Send request to Ollama local API
-      const ollamaResponse = await axios.post(
-        "http://localhost:11434/api/generate",
-        {
-          model: "llama3:latest", // model name you downloaded
-          prompt: prompt, // your user prompt
-          stream: false,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
+    const maxRetries = 3;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await model.generateContent(
+          prompt + "\n\nReturn the answer in short, just highlight the actual problem."
+        );
+        const message = result.response.text();
+        return response.json({ success: true, message });
+      } catch (error: any) {
+        const is503 = error?.message?.includes("503");
+        console.error(`Attempt ${attempt} failed:`, error?.message);
+
+        if (is503 && attempt < maxRetries) {
+          const delay = attempt * 2000;
+          console.log(`Retrying in ${delay / 1000}s...`);
+          await sleep(delay);
+          continue;
         }
-      );
 
-      const message =
-        ollamaResponse.data?.response || "No response from Ollama.";
+        const message = is503
+          ? "AI is currently busy. Please try again in a moment."
+          : "Something went wrong with the AI. Please try again.";
 
-      console.log(message);
-
-      // Ollama streams responses, so 'response' property contains final output
-      return response.json({
-        success: true,
-        message,
-      });
-    } catch (error: any) {
-      console.error("Ollama Error:", error?.message || error);
-      return response.status(500).json({
-        success: false,
-        message: "Something went wrong, please try again later!",
-      });
+        return response.status(503).json({ success: false, message });
+      }
     }
   }
 }
