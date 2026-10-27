@@ -19,7 +19,7 @@ import { toast } from "sonner";
 const FieldMsg = ({ msg, loading }: { msg: string | null; loading: boolean }) => {
   if (loading) return <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />;
   if (!msg) return null;
-  const ok = msg.includes("available");
+  const ok = msg.includes("available") || msg.includes("avaliable");
   return (
     <span className={`flex items-center gap-1 text-xs ${ok ? "text-green-500" : "text-red-500"}`}>
       {ok ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
