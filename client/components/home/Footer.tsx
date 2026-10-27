@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container">
         <Separator className="my-5" />
         <div className="flex items-center justify-center gap-4">
-          <Copyright className="h-4 w-4" /> 2024 All rights reserved.
+          <Copyright className="h-4 w-4" /> 2026 All rights reserved.
         </div>
       </div>
     </footer>

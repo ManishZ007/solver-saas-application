@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "xterm/css/xterm.css";
 
 @layer base {
   :root {
