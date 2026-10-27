@@ -9,6 +9,7 @@ class PostController {
         try {
             const body = request.body;
             const postImage = request.file.filename;
+            const tags = body.tags ? body.tags.split(",").map((t) => t.trim()).filter(Boolean) : [];
             const newPostObject = {
                 title: body.title,
                 username: body.username,
@@ -16,6 +17,7 @@ class PostController {
                 user_id: body.user_id,
                 post_image: postImage,
                 publish: body.publish === "true" ? true : false,
+                tags,
             };
             const newPost = await prisma_1.default.posts.create({
                 data: newPostObject,

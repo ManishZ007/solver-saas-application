@@ -69,6 +69,13 @@ export const MARK_SOLVED_URL = API_URL + "/solution/mark-solved";
 //Leaderboard
 export const LEADERBOARD_URL = API_URL + "/leaderboard";
 
+//Contests
+export const CONTESTS_URL = API_URL + "/contests";
+export const CONTEST_URL = API_URL + "/contest";
+export const CONTEST_JOIN_URL = API_URL + "/contest/join";
+export const CONTEST_SUBMIT_URL = API_URL + "/contest/submit";
+export const CONTEST_SUBMISSIONS_URL = API_URL + "/contest/submissions";
+
 //Coin
 export const CREDIT_FREE_COIN_URL = API_URL + "/credit-free-coin";
 

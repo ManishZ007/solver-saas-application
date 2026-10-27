@@ -5,6 +5,40 @@ const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GOOGLE_AI_API_K
 const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 class AiController {
+    static async judgeSolutions(request, response) {
+        const { problem, solutions } = request.body;
+        if (!problem || !solutions?.length) {
+            return response.status(400).json({ success: false, message: "problem and solutions required" });
+        }
+        const solutionList = solutions
+            .map((s, i) => `Solution ${i + 1} by ${s.username}:\n${s.solution}`)
+            .join("\n\n---\n\n");
+        const prompt = `You are a senior software engineer judging solutions to a coding problem.
+
+Problem: ${problem}
+
+${solutionList}
+
+Evaluate each solution and respond in this exact JSON format:
+{
+  "winner": { "index": 1, "username": "name", "reason": "why this is best" },
+  "rankings": [
+    { "index": 1, "username": "name", "score": 95, "correctness": "excellent", "performance": "good", "readability": "great", "feedback": "brief feedback" }
+  ],
+  "summary": "Overall comparison in 2 sentences"
+}
+
+Be concise. Return only valid JSON.`;
+        try {
+            const result = await model.generateContent(prompt);
+            const text = result.response.text().replace(/```json\n?|\n?```/g, "").trim();
+            const parsed = JSON.parse(text);
+            return response.json({ success: true, result: parsed });
+        }
+        catch {
+            return response.status(500).json({ success: false, message: "AI judge failed. Try again." });
+        }
+    }
     static async question(request, response) {
         const { prompt } = request.body;
         if (!prompt) {

@@ -2,7 +2,7 @@
 
 import { LayoutDashboardIcon, LogOutIcon } from "lucide-react";
 import React from "react";
-import { User, MessageSquare, TerminalSquare, Trophy } from "lucide-react";
+import { User, MessageSquare, TerminalSquare, Trophy, Zap } from "lucide-react";
 import { ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -38,6 +38,12 @@ const sidebarItems: SidebarItem[] = [
     name: "Leaderboard",
     path: "/dashboard/leaderboard",
     icon: <Trophy className="h-5 w-5" />,
+  },
+  {
+    id: 7,
+    name: "Contests",
+    path: "/dashboard/contests",
+    icon: <Zap className="h-5 w-5" />,
   },
 ];
 

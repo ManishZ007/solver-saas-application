@@ -102,6 +102,70 @@ model Posts {
   @@map("posts")
 }
 
+model Contest {
+  id          String            @id @default(uuid())
+  title       String
+  description String
+  creator_id  String
+  creator_username String
+  start_time  DateTime
+  end_time    DateTime
+  created_at  DateTime          @default(now())
+  Problems    ContestProblem[]
+  Participants ContestParticipant[]
+  Submissions ContestSubmission[]
+
+  @@index([start_time])
+  @@map("contests")
+}
+
+model ContestProblem {
+  id          String   @id @default(uuid())
+  contest     Contest  @relation(fields: [contest_id], references: [id], onDelete: Cascade)
+  contest_id  String
+  title       String
+  description String
+  constraints String   @default("")
+  examples    String   @default("")
+  difficulty  String   @default("medium")
+  points      Int      @default(100)
+  order_index Int      @default(0)
+
+  @@map("contest_problems")
+}
+
+model ContestParticipant {
+  id           String   @id @default(uuid())
+  contest      Contest  @relation(fields: [contest_id], references: [id], onDelete: Cascade)
+  contest_id   String
+  user_id      String
+  username     String
+  total_points Int      @default(0)
+  joined_at    DateTime @default(now())
+
+  @@unique([contest_id, user_id])
+  @@map("contest_participants")
+}
+
+model ContestSubmission {
+  id          String   @id @default(uuid())
+  contest     Contest  @relation(fields: [contest_id], references: [id], onDelete: Cascade)
+  contest_id  String
+  problem_id  String
+  user_id     String
+  username    String
+  language    String
+  code        String
+  score       Int      @default(0)
+  status      String   @default("pending")
+  feedback    String   @default("")
+  time_complexity String @default("")
+  submitted_at DateTime @default(now())
+
+  @@index([contest_id, user_id])
+  @@map("contest_submissions")
+}
+
 model Notifications {
   id         String   @id @default(uuid())
   user_id    String

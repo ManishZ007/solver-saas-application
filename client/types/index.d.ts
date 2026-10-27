@@ -79,6 +79,55 @@ declare interface PostType {
   Solutions?: Array<SolutionType> | [];
 }
 
+declare interface ContestProblemType {
+  id: string;
+  contest_id: string;
+  title: string;
+  description: string;
+  constraints: string;
+  examples: string;
+  difficulty: "easy" | "medium" | "hard";
+  points: number;
+  order_index: number;
+}
+
+declare interface ContestParticipantType {
+  id: string;
+  contest_id: string;
+  user_id: string;
+  username: string;
+  total_points: number;
+  joined_at: string;
+}
+
+declare interface ContestType {
+  id: string;
+  title: string;
+  description: string;
+  creator_id: string;
+  creator_username: string;
+  start_time: string;
+  end_time: string;
+  created_at: string;
+  Problems?: ContestProblemType[];
+  Participants?: ContestParticipantType[];
+}
+
+declare interface ContestSubmissionType {
+  id: string;
+  contest_id: string;
+  problem_id: string;
+  user_id: string;
+  username: string;
+  language: string;
+  code: string;
+  score: number;
+  status: string;
+  feedback: string;
+  time_complexity: string;
+  submitted_at: string;
+}
+
 declare interface NotificationType {
   id: string;
   user_id: string;

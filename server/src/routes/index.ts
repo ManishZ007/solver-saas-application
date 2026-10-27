@@ -11,6 +11,7 @@ import UserController from "../controllers/UserController";
 import AiController from "../controllers/AIController";
 import NotificationController from "../controllers/NotificationController";
 import LeaderboardController from "../controllers/LeaderboardController";
+import ContestController from "../controllers/ContestController";
 const router = Router();
 
 // authentication
@@ -72,5 +73,13 @@ router.post("/notifications/mark-read", NotificationController.markRead);
 
 //Leaderboard
 router.get("/leaderboard", LeaderboardController.index);
+
+//Contests
+router.get("/contests", ContestController.index);
+router.get("/contest/:id", ContestController.show);
+router.post("/contest", ContestController.store);
+router.post("/contest/join", ContestController.join);
+router.post("/contest/submit", ContestController.submit);
+router.get("/contest/submissions", ContestController.userSubmissions);
 
 export default router;

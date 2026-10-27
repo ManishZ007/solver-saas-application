@@ -14,6 +14,9 @@ const SolutionController_1 = __importDefault(require("../controllers/SolutionCon
 const RatingsController_1 = __importDefault(require("../controllers/RatingsController"));
 const UserController_1 = __importDefault(require("../controllers/UserController"));
 const AIController_1 = __importDefault(require("../controllers/AIController"));
+const NotificationController_1 = __importDefault(require("../controllers/NotificationController"));
+const LeaderboardController_1 = __importDefault(require("../controllers/LeaderboardController"));
+const ContestController_1 = __importDefault(require("../controllers/ContestController"));
 const router = (0, express_1.Router)();
 // authentication
 router.post("/auth/createUser", Authcontrollers_1.default.createUser);
@@ -45,6 +48,7 @@ router.put("/post/:id", PostController_1.default.update);
 router.delete("/post/:id", PostController_1.default.destroy);
 //Solutions
 router.post("/solution", SolutionController_1.default.create);
+router.post("/solution/mark-solved", SolutionController_1.default.markSolved);
 //Rating
 router.post("/rating", RatingsController_1.default.create);
 router.post("/rating/toggle", RatingsController_1.default.toggle);
@@ -53,4 +57,17 @@ router.get("/rating/:user_id", RatingsController_1.default.index);
 router.post("/update-profile", UserController_1.default.updateUser);
 //Ai
 router.post("/ai-response", AIController_1.default.question);
+router.post("/ai-judge", AIController_1.default.judgeSolutions);
+//Notifications
+router.get("/notifications", NotificationController_1.default.index);
+router.post("/notifications/mark-read", NotificationController_1.default.markRead);
+//Leaderboard
+router.get("/leaderboard", LeaderboardController_1.default.index);
+//Contests
+router.get("/contests", ContestController_1.default.index);
+router.get("/contest/:id", ContestController_1.default.show);
+router.post("/contest", ContestController_1.default.store);
+router.post("/contest/join", ContestController_1.default.join);
+router.post("/contest/submit", ContestController_1.default.submit);
+router.get("/contest/submissions", ContestController_1.default.userSubmissions);
 exports.default = router;
