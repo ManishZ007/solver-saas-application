@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
-import { Separator } from "../ui/separator";
+import { ArrowUpRight, Code2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -13,35 +12,47 @@ const UserContainer = ({ user }: UserContainerProps) => {
   const router = useRouter();
 
   return (
-    <div className="w-full max-h-[200px] md:min-w-[230px]   p-3 flex flex-col gap-2 text-center items-center justify-center border border-solid boredr-[#222222]/10 rounded-3xl ">
-      <div className="w-16 h-16">
-        {user?.profile_image?.length ? (
-          <>
+    <div className="md:min-w-[240px] rounded-2xl border bg-card overflow-hidden">
+      {/* Gradient header */}
+      <div className="h-16 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent" />
+
+      <div className="px-4 pb-4 -mt-8">
+        {/* Avatar */}
+        <div className="mb-3">
+          {user?.profile_image?.length ? (
             <Image
               src={user.profile_image}
               alt="user profile"
-              width={100}
-              height={100}
-              className="h-auto w-full bg-cover rounded-full"
+              width={56}
+              height={56}
+              className="w-14 h-14 rounded-full border-2 border-background object-cover ring-2 ring-primary/20"
             />
-          </>
-        ) : (
-          <>
-            <p className="h-16 w-16 text-2xl rounded-full border flex items-center justify-center">
-              {user?.username?.charAt(0)}
-            </p>
-          </>
-        )}
+          ) : (
+            <div className="w-14 h-14 rounded-full border-2 border-background bg-primary/10 ring-2 ring-primary/20 flex items-center justify-center">
+              <span className="text-xl font-bold text-primary">
+                {user?.username?.charAt(0)?.toUpperCase()}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-0.5 mb-3">
+          <h2 className="font-semibold text-base leading-tight">{user?.username}</h2>
+          <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+        </div>
+
+        <button
+          onClick={() => router.push("/dashboard/profile")}
+          className="w-full flex items-center justify-center gap-1.5 text-sm py-1.5 rounded-xl border hover:bg-muted transition-colors"
+        >
+          View profile <ArrowUpRight className="w-3.5 h-3.5" />
+        </button>
       </div>
 
-      <h1 className="text-xl ">{user?.username}</h1>
-      <p className="text-muted-foreground text-sm">{user?.email}</p>
-      <Separator />
-      <div
-        className="flex items-center justify-center gap-2 cursor-pointer"
-        onClick={() => router.push("/dashboard/profile")}
-      >
-        <p>view profile</p> <ArrowRight className="h-4 w-4 " />
+      {/* Footer strip */}
+      <div className="px-4 py-2 border-t bg-muted/40 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Code2 className="w-3.5 h-3.5" />
+        Solver — Dev Q&A Platform
       </div>
     </div>
   );

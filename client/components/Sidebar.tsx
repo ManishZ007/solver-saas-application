@@ -15,36 +15,11 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
-  {
-    id: 1,
-    name: "Profile",
-    path: "/dashboard/profile",
-    icon: <User className="h-5 w-5" />,
-  },
-  {
-    id: 4,
-    name: "Chats",
-    path: "/dashboard/chats",
-    icon: <MessageSquare className="h-5 w-5" />,
-  },
-  {
-    id: 5,
-    name: "Terminal",
-    path: "/dashboard/terminal",
-    icon: <TerminalSquare className="h-5 w-5" />,
-  },
-  {
-    id: 6,
-    name: "Leaderboard",
-    path: "/dashboard/leaderboard",
-    icon: <Trophy className="h-5 w-5" />,
-  },
-  {
-    id: 7,
-    name: "Contests",
-    path: "/dashboard/contests",
-    icon: <Zap className="h-5 w-5" />,
-  },
+  { id: 1, name: "Profile",     path: "/dashboard/profile",     icon: <User className="h-5 w-5" /> },
+  { id: 4, name: "Chats",       path: "/dashboard/chats",        icon: <MessageSquare className="h-5 w-5" /> },
+  { id: 5, name: "Terminal",    path: "/dashboard/terminal",     icon: <TerminalSquare className="h-5 w-5" /> },
+  { id: 6, name: "Leaderboard", path: "/dashboard/leaderboard",  icon: <Trophy className="h-5 w-5" /> },
+  { id: 7, name: "Contests",    path: "/dashboard/contests",     icon: <Zap className="h-5 w-5" /> },
 ];
 
 const Sidebar = () => {
@@ -52,52 +27,53 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="hidden md:block sticky top-0 left-0 h-full py-4 px-3">
-      <div className="relative h-full flex flex-col items-center">
-        {/* Dashboard home */}
-        <div
-          className="flex gap-3 items-center cursor-pointer p-2 rounded-lg hover:bg-muted transition-colors"
-          onClick={() => router.push("/dashboard")}
-          title="Dashboard"
-        >
-          <LayoutDashboardIcon className="h-5 w-5" />
-        </div>
+    <nav className="hidden md:flex sticky top-0 h-screen flex-col items-center py-4 px-2 border-r bg-card w-[60px] shrink-0">
+      {/* Logo / home */}
+      <button
+        onClick={() => router.push("/dashboard")}
+        title="Dashboard"
+        className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors mb-1 ${
+          pathname === "/dashboard"
+            ? "bg-primary text-primary-foreground"
+            : "hover:bg-muted text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        <LayoutDashboardIcon className="h-5 w-5" />
+      </button>
 
-        {/* Divider */}
-        <div className="w-6 h-px bg-border my-3" />
+      <div className="w-6 h-px bg-border my-2" />
 
-        {/* Nav items */}
-        <ul className="flex flex-col gap-2 items-center">
-          {sidebarItems.map(({ id, icon, path, name }) => {
-            const isActive = pathname.startsWith(path);
-            return (
-              <li key={id}>
-                <div
-                  title={name}
-                  className={`flex gap-3 items-center cursor-pointer p-2 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted"
-                  }`}
-                  onClick={() => router.push(path)}
-                >
-                  {icon}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+      {/* Nav items */}
+      <ul className="flex flex-col gap-1 items-center flex-1">
+        {sidebarItems.map(({ id, icon, path, name }) => {
+          const isActive = pathname.startsWith(path);
+          return (
+            <li key={id}>
+              <button
+                title={name}
+                onClick={() => router.push(path)}
+                className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {icon}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
 
-        {/* Sign out — pinned to bottom */}
-        <div
-          className="mt-auto p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
-          title="Sign out"
-          onClick={() => signOut()}
-        >
-          <LogOutIcon className="h-5 w-5" />
-        </div>
-      </div>
-    </div>
+      {/* Sign out */}
+      <button
+        title="Sign out"
+        onClick={() => signOut()}
+        className="w-10 h-10 flex items-center justify-center rounded-xl text-muted-foreground hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 transition-colors"
+      >
+        <LogOutIcon className="h-5 w-5" />
+      </button>
+    </nav>
   );
 };
 

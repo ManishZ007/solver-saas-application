@@ -1,7 +1,7 @@
 "use client";
 
 import { checkDateStatus } from "@/lib/utils";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, CalendarClock, Clock } from "lucide-react";
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
@@ -35,37 +35,48 @@ const ShowEventsContainer = ({ events }: ShowEventsContainerProps) => {
 
   return (
     <>
-      <div className="w-full max-h-[200px] overflow-y-auto scroll no-scrollbar md:max-w-[360px] my-2 p-3 flex flex-col gap-2 text-center items-center">
-        {events.map((event, index) => (
-          <div
-            key={index}
-            className="w-full flex flex-col gap-2 border border-solid boredr-[#222222]/10 rounded p-3 items-start justify-start"
-          >
-            <div className="flex w-full items-center justify-between">
-              <p className="text-sm">{event.title}</p>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`h-2 w-2 rounded-full ${
-                    checkDateStatus(event.date_of_event as string)
-                      ? "bg-red-500"
-                      : "bg-green-500"
-                  }`}
-                />
-                <Pencil
-                  className="h-3 w-3 cursor-pointer text-muted-foreground hover:text-foreground"
-                  onClick={() => setEditingEvent(event)}
-                />
-                <Trash2
-                  className="h-3 w-3 cursor-pointer text-muted-foreground hover:text-red-500"
-                  onClick={() => handleDelete(event.id as string)}
-                />
-              </div>
+      <div className="md:min-w-[240px] rounded-2xl border bg-card">
+        <div className="px-4 py-3 border-b flex items-center gap-2">
+          <CalendarClock className="w-4 h-4 text-primary" />
+          <span className="font-semibold text-sm">My Events</span>
+          {events.length > 0 && (
+            <span className="ml-auto text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+              {events.length}
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-0 max-h-[260px] overflow-y-auto no-scrollbar divide-y">
+          {events.length === 0 ? (
+            <div className="px-4 py-6 text-center text-xs text-muted-foreground">
+              No events yet
             </div>
-            <p className="text-sm">
-              date {new Date(event.date_of_event as string).toDateString()}
-            </p>
-          </div>
-        ))}
+          ) : (
+            events.map((event, index) => {
+              const isPast = checkDateStatus(event.date_of_event as string);
+              return (
+                <div key={index} className="px-4 py-3 flex items-start gap-2 hover:bg-muted/40 transition-colors group">
+                  <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${isPast ? "bg-red-400" : "bg-green-400"}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{event.title}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                      <Clock className="w-3 h-3" />
+                      {new Date(event.date_of_event as string).toDateString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => setEditingEvent(event)}>
+                      <Pencil className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                    </button>
+                    <button onClick={() => handleDelete(event.id as string)}>
+                      <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-red-500" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
       {editingEvent && (

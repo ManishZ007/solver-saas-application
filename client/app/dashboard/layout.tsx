@@ -5,12 +5,13 @@ export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="flex h-full relative">
+    <div className="flex h-full min-h-screen bg-background">
       <Sidebar />
-
-      <div className="p-4 mx-4 rounded-2xl  w-full">{children}</div>
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
-
-//bg-[#f1f5f9] dark:bg-[#000000]
