@@ -57,6 +57,17 @@ export const APP_CHAT_GROUP_URL = Env.APP_URL + "/dashboard/chat";
 
 //Ai
 export const AI_RESPONSE_URL = API_URL + "/ai-response";
+export const AI_JUDGE_URL = API_URL + "/ai-judge";
+
+//Notifications
+export const NOTIFICATIONS_URL = API_URL + "/notifications";
+export const MARK_NOTIFICATIONS_READ = API_URL + "/notifications/mark-read";
+
+//Solutions
+export const MARK_SOLVED_URL = API_URL + "/solution/mark-solved";
+
+//Leaderboard
+export const LEADERBOARD_URL = API_URL + "/leaderboard";
 
 //Coin
 export const CREDIT_FREE_COIN_URL = API_URL + "/credit-free-coin";

@@ -9,6 +9,7 @@ import { ThemeToggle } from "./togglers/theme-toggle";
 import { authItems, navItems } from "@/constants";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import NotificationBell from "./notifications/NotificationBell";
 
 const UnauthorizedNav = () => {
   return authItems.map((items) => (
@@ -98,6 +99,7 @@ const Header = () => {
                   <UnauthorizedNav />
                 </>
               )}
+              {status === "authenticated" && <NotificationBell />}
               <ThemeToggle />
             </nav>
           </div>

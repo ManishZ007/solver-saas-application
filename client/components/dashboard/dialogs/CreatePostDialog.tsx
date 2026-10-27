@@ -38,6 +38,15 @@ const CreatePostDialog = ({
   const router = useRouter();
   const [privatePost, setPrivatePost] = useState<boolean>(false);
   const [file, setFile] = useState<FileWithPreview | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const ALL_TAGS = ["React", "Next.js", "TypeScript", "JavaScript", "Python", "Node", "CSS", "Database", "Git"];
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
 
   const handleCheckboxChange = () => {
     setPrivatePost(!privatePost);
@@ -82,8 +91,8 @@ const CreatePostDialog = ({
     formData.append("description", data.description);
 
     if (user?.username) formData.append("username", user.username);
-
     if (user?.id) formData.append("user_id", user?.id);
+    if (selectedTags.length > 0) formData.append("tags", selectedTags.join(","));
 
     if (privatePost) {
       formData.append("publish", JSON.stringify(false));
@@ -137,6 +146,25 @@ const CreatePostDialog = ({
                     {errors.description.message}
                   </p>
                 )}
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label className="text-[13px]">Tags</Label>
+                <div className="flex flex-wrap gap-1.5">
+                  {ALL_TAGS.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                        selectedTags.includes(tag)
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "border-border hover:border-primary text-muted-foreground"
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div
                 {...getRootProps()}

@@ -83,20 +83,36 @@ model Events {
 }
 
 model Posts {
-  id            String      @id @default(uuid())
-  username      String      @default("")
-  profile_image String      @default("")
-  title         String      @default("")
-  description   String      @default("")
-  post_image    String
-  user          User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id       String
-  created_at    DateTime    @default(now())
-  publish       Boolean     @default(true)
-  Solutions     Solutions[]
+  id                   String      @id @default(uuid())
+  username             String      @default("")
+  profile_image        String      @default("")
+  title                String      @default("")
+  description          String      @default("")
+  post_image           String
+  user                 User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id              String
+  created_at           DateTime    @default(now())
+  publish              Boolean     @default(true)
+  tags                 String[]    @default([])
+  is_solved            Boolean     @default(false)
+  accepted_solution_id String?
+  Solutions            Solutions[]
 
   @@index([created_at])
   @@map("posts")
+}
+
+model Notifications {
+  id         String   @id @default(uuid())
+  user_id    String
+  type       String
+  message    String
+  post_id    String?
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  @@index([user_id, created_at])
+  @@map("notifications")
 }
 
 model Solutions {

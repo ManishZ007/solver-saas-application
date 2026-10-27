@@ -73,5 +73,18 @@ declare interface PostType {
   post_image: string;
   created_at: string;
   user_id: string;
+  tags?: string[];
+  is_solved?: boolean;
+  accepted_solution_id?: string | null;
   Solutions?: Array<SolutionType> | [];
+}
+
+declare interface NotificationType {
+  id: string;
+  user_id: string;
+  type: string;
+  message: string;
+  post_id?: string | null;
+  is_read: boolean;
+  created_at: string;
 }

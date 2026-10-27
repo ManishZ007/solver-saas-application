@@ -9,6 +9,8 @@ import SolutionController from "../controllers/SolutionController";
 import RatingsController from "../controllers/RatingsController";
 import UserController from "../controllers/UserController";
 import AiController from "../controllers/AIController";
+import NotificationController from "../controllers/NotificationController";
+import LeaderboardController from "../controllers/LeaderboardController";
 const router = Router();
 
 // authentication
@@ -50,6 +52,7 @@ router.delete("/post/:id", PostController.destroy);
 
 //Solutions
 router.post("/solution", SolutionController.create);
+router.post("/solution/mark-solved", SolutionController.markSolved);
 
 //Rating
 router.post("/rating", RatingsController.create);
@@ -61,5 +64,13 @@ router.post("/update-profile", UserController.updateUser);
 
 //Ai
 router.post("/ai-response", AiController.question);
+router.post("/ai-judge", AiController.judgeSolutions);
+
+//Notifications
+router.get("/notifications", NotificationController.index);
+router.post("/notifications/mark-read", NotificationController.markRead);
+
+//Leaderboard
+router.get("/leaderboard", LeaderboardController.index);
 
 export default router;
