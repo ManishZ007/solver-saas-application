@@ -48,8 +48,8 @@ export default function SignIn() {
   };
 
   // Step 2 — verify OTP then sign in
-  const handleVerifyOtp = async () => {
-    const code = otp.join("");
+  const handleVerifyOtp = async (overrideOtp?: string[]) => {
+    const code = (overrideOtp ?? otp).join("");
     if (code.length < 6) { toast.error("Enter the full 6-digit code."); return; }
     setLoading(true);
     try {
@@ -85,7 +85,7 @@ export default function SignIn() {
     setOtp(newOtp);
     if (value && index < 5) inputRefs.current[index + 1]?.focus();
     if (newOtp.every((d) => d !== "") && newOtp.join("").length === 6) {
-      setTimeout(handleVerifyOtp, 100);
+      setTimeout(() => handleVerifyOtp(newOtp), 100);
     }
   };
 

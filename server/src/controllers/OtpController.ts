@@ -55,36 +55,43 @@ class OtpController {
       const expiresAt = Date.now() + 10 * 60 * 1000; // 10 min
       otpStore.set(user.email, { otp, expiresAt });
 
-      const transporter = await getTransporter();
-      const info = await transporter.sendMail({
-        from: `"Solver" <${process.env.EMAIL_USER ?? "solver@example.com"}>`,
-        to: user.email,
-        subject: "Your Solver verification code",
-        html: `
-          <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
-            <h2 style="margin:0 0 8px;font-size:22px">Your verification code</h2>
-            <p style="color:#6b7280;margin:0 0 24px">Use this code to sign in to Solver. It expires in <strong>10 minutes</strong>.</p>
-            <div style="font-size:40px;font-weight:700;letter-spacing:12px;text-align:center;background:#f3f4f6;padding:20px;border-radius:8px">
-              ${otp}
-            </div>
-            <p style="color:#9ca3af;font-size:13px;margin:24px 0 0">If you didn't request this, you can safely ignore this email.</p>
-          </div>
-        `,
-      });
+      // Always log OTP to console so dev can test without email setup
+      console.log(`\n🔑 OTP for ${user.email}: ${otp}\n`);
 
-      // In dev (Ethereal), print the preview URL so you can see the email
-      const previewUrl = nodemailer.getTestMessageUrl(info);
-      if (previewUrl) console.log("\n📬 OTP email preview:", previewUrl);
+      let previewUrl: string | false = false;
+      try {
+        const transporter = await getTransporter();
+        const info = await transporter.sendMail({
+          from: `"Solver" <${process.env.EMAIL_USER ?? "solver@example.com"}>`,
+          to: user.email,
+          subject: "Your Solver verification code",
+          html: `
+            <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px">
+              <h2 style="margin:0 0 8px;font-size:22px">Your verification code</h2>
+              <p style="color:#6b7280;margin:0 0 24px">Use this code to sign in to Solver. It expires in <strong>10 minutes</strong>.</p>
+              <div style="font-size:40px;font-weight:700;letter-spacing:12px;text-align:center;background:#f3f4f6;padding:20px;border-radius:8px">
+                ${otp}
+              </div>
+              <p style="color:#9ca3af;font-size:13px;margin:24px 0 0">If you didn't request this, you can safely ignore this email.</p>
+            </div>
+          `,
+        });
+        previewUrl = nodemailer.getTestMessageUrl(info) || false;
+        if (previewUrl) console.log("📬 Email preview:", previewUrl);
+      } catch (emailErr) {
+        // Email failed but OTP is stored — dev can still use the console log above
+        console.warn("⚠️  Email send failed (using console OTP):", (emailErr as Error).message);
+      }
 
       return res.json({
         success: true,
-        message: "OTP sent to your email.",
+        message: "OTP sent! Check your email or the server console.",
         email: user.email.replace(/(.{2})(.*)(@.*)/, "$1***$3"),
         ...(previewUrl ? { previewUrl } : {}),
       });
     } catch (err) {
       console.error("sendOtp error:", err);
-      return res.status(500).json({ success: false, message: "Failed to send OTP. Check email config." });
+      return res.status(500).json({ success: false, message: "Something went wrong. Please try again." });
     }
   }
 

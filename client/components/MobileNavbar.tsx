@@ -98,7 +98,7 @@ export function MobileNavbar({ open, handleOpenMobileMenu }: MobileMenuProps) {
                 className="flex gap-2 items-center cursor-pointer"
                 onClick={() => {
                   if (handleOpenMobileMenu) {
-                    signOut();
+                    signOut({ callbackUrl: "/sign-in" });
                     handleOpenMobileMenu();
                   }
                 }}

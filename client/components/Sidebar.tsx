@@ -68,7 +68,7 @@ const Sidebar = () => {
       {/* Sign out */}
       <button
         title="Sign out"
-        onClick={() => signOut()}
+        onClick={() => signOut({ callbackUrl: "/sign-in" })}
         className="w-10 h-10 flex items-center justify-center rounded-xl text-muted-foreground hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 transition-colors"
       >
         <LogOutIcon className="h-5 w-5" />
