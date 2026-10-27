@@ -3,9 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Circle, Loader2 } from "lucide-react";
+import { Loader2, Code2, CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
@@ -14,217 +13,180 @@ import { ApiResponse } from "@/types/ApiResponse";
 import { SignUpSchema, TSignUpSchema } from "@/lib/validations/userSchema";
 import useDebounce from "@/hooks/use-debounce";
 import { useForm } from "react-hook-form";
-import {
-  CHECK_EMAIL_URL,
-  CHECK_USERNAME_URL,
-  CREATE_USER_URL,
-} from "@/lib/apiEndPoints";
+import { CHECK_EMAIL_URL, CHECK_USERNAME_URL, CREATE_USER_URL } from "@/lib/apiEndPoints";
+import { toast } from "sonner";
 
-const SignIn = () => {
-  const router = useRouter();
-  const [username, setUsername] = useState<string | null>(null);
-  const [isCheckingUsername, setIsCheckingUsername] = useState<boolean>(false);
-  const [usernameMessage, setUsernameMessage] = useState<string | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
-  const [emailMessage, setEmailMessage] = useState<string | null>(null);
-  const [isCheckingEmail, setIsCheckingEmail] = useState<boolean>(false);
-  const debounceUsername = useDebounce(username);
-  const debounceEmail = useDebounce(email);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<TSignUpSchema>({
-    resolver: zodResolver(SignUpSchema),
-    defaultValues: {
-      firstname: "",
-      lastname: "",
-      username: "",
-      email: "",
-      password: "",
-    },
-  });
-
-  useEffect(() => {
-    const checkUsernameAvailable = async () => {
-      if (username) {
-        setIsCheckingUsername(true);
-
-        setUsernameMessage("");
-        try {
-          const response = await axios.post<ApiResponse>(CHECK_USERNAME_URL, {
-            username: debounceUsername,
-          });
-          setUsernameMessage(response.data.message!);
-        } catch (error) {
-          const axiosError = error as AxiosError<ApiResponse>;
-          setUsernameMessage(
-            axiosError.response?.data.message ?? "Error checking username"
-          );
-        } finally {
-          setIsCheckingUsername(false);
-        }
-      }
-    };
-
-    checkUsernameAvailable();
-  }, [debounceUsername]);
-
-  useEffect(() => {
-    const checkEmailAvailable = async () => {
-      if (email) {
-        setIsCheckingEmail(true);
-
-        setEmailMessage("");
-        try {
-          const response = await axios.post<ApiResponse>(CHECK_EMAIL_URL, {
-            email: debounceEmail,
-          });
-          setEmailMessage(response.data.message!);
-        } catch (error) {
-          const axiosError = error as AxiosError<ApiResponse>;
-          setEmailMessage(
-            axiosError.response?.data.message ?? "Error checking email"
-          );
-        } finally {
-          setIsCheckingEmail(false);
-        }
-      }
-    };
-
-    checkEmailAvailable();
-  }, [debounceEmail]);
-
-  const onSubmit = async (data: TSignUpSchema) => {
-    const res = await axios.post<ApiResponse>(CREATE_USER_URL, {
-      username: data.username,
-      firstname: data.firstname,
-      lastname: data.lastname,
-      email: data.email,
-      password: data.password,
-    });
-
-    if (!res.data.success) {
-      console.log(res.data.message);
-    }
-
-    router.push("/sign-in");
-  };
-
+const FieldMsg = ({ msg, loading }: { msg: string | null; loading: boolean }) => {
+  if (loading) return <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />;
+  if (!msg) return null;
+  const ok = msg.includes("available");
   return (
-    <section className="container">
-      <div className=" w-full flex items-center justify-center">
-        <div className="py-3 px-5 flex flex-col justify-center items-center w-[360px]">
-          <div className="w-full flex flex-col gap-1 items-center justify-center">
-            <Circle className="h-5 w-5 mb-4" />
-            <p className="font-bold text-xl">Create your account</p>
-            <p className="text-muted-foreground text-sm">
-              Welcome! Please fill in the details to get started.
-            </p>
-          </div>
-          <Separator className="my-6" />
-          <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-            <div className="w-full flex flex-col items-center justify-center gap-5">
-              <div className="grid grid-cols-2 items-start w-full gap-2">
-                <div>
-                  <Label className="text-[13px]">First name</Label>
-                  <Input {...register("firstname")} type="text" className="" />
-                  {errors?.firstname && (
-                    <p className="text-sm text-red-500">
-                      {errors.firstname.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <Label className="text-[13px]">Last name</Label>
-                  <Input {...register("lastname")} type="text" />
-                  {errors.lastname && (
-                    <p className="text-sm text-red-500">
-                      {errors.lastname.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex flex-col items-start w-full gap-1">
-                <Label className="text-[13px]">Username</Label>
-                <Input
-                  className="mb-1"
-                  {...register("username")}
-                  type="text"
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                  }}
-                />
-                {isCheckingUsername && (
-                  <Loader2 className="animate-spin h-3 w-3" />
-                )}
-                <p
-                  className={`text-sm ${
-                    usernameMessage == "username is available"
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
-                >
-                  {usernameMessage}
-                </p>
-              </div>
-              <div className="flex flex-col items-start w-full gap-1">
-                <Label className="text-[13px]">Email address</Label>
-                <Input
-                  className="mb-1"
-                  {...register("email")}
-                  type="email"
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                />
-                {isCheckingEmail && (
-                  <Loader2 className="animate-spin h-3 w-3" />
-                )}
-                <p
-                  className={`text-sm ${
-                    emailMessage === "email is avaliable"
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
-                >
-                  {emailMessage}
-                </p>
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
-              </div>
-
-              <div className="flex flex-col items-start w-full gap-1">
-                <Label className="text-[13px]">Password</Label>
-                <Input {...register("password")} type="password"></Input>
-                {errors.password && (
-                  <p className="text-sm text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-              <Button className="w-full" type="submit">
-                Continue
-              </Button>
-            </div>
-          </form>
-          <Separator className="my-6" />
-
-          <div className="w-full text-center flex gap-1 items-center justify-center">
-            <p className="text-sm text-muted-foreground">
-              Already have an account?
-            </p>
-            <Link href={`/sign-in`} className="text-sm">
-              Sign in
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
+    <span className={`flex items-center gap-1 text-xs ${ok ? "text-green-500" : "text-red-500"}`}>
+      {ok ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+      {msg}
+    </span>
   );
 };
 
-export default SignIn;
+export default function SignUp() {
+  const router = useRouter();
+  const [username, setUsername] = useState<string | null>(null);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [usernameMessage, setUsernameMessage] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [emailMessage, setEmailMessage] = useState<string | null>(null);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const debounceUsername = useDebounce(username);
+  const debounceEmail = useDebounce(email);
+
+  const { register, handleSubmit, formState: { errors } } = useForm<TSignUpSchema>({
+    resolver: zodResolver(SignUpSchema),
+    defaultValues: { firstname: "", lastname: "", username: "", email: "", password: "" },
+  });
+
+  useEffect(() => {
+    if (!username) return;
+    setIsCheckingUsername(true);
+    setUsernameMessage(null);
+    axios.post<ApiResponse>(CHECK_USERNAME_URL, { username: debounceUsername })
+      .then((r) => setUsernameMessage(r.data.message!))
+      .catch((e: AxiosError<ApiResponse>) => setUsernameMessage(e.response?.data.message ?? "Error"))
+      .finally(() => setIsCheckingUsername(false));
+  }, [debounceUsername]);
+
+  useEffect(() => {
+    if (!email) return;
+    setIsCheckingEmail(true);
+    setEmailMessage(null);
+    axios.post<ApiResponse>(CHECK_EMAIL_URL, { email: debounceEmail })
+      .then((r) => setEmailMessage(r.data.message!))
+      .catch((e: AxiosError<ApiResponse>) => setEmailMessage(e.response?.data.message ?? "Error"))
+      .finally(() => setIsCheckingEmail(false));
+  }, [debounceEmail]);
+
+  const onSubmit = async (data: TSignUpSchema) => {
+    setSubmitting(true);
+    try {
+      const res = await axios.post<ApiResponse>(CREATE_USER_URL, {
+        username: data.username,
+        firstname: data.firstname,
+        lastname: data.lastname,
+        email: data.email,
+        password: data.password,
+      });
+      if (res.data.success) {
+        toast.success("Account created! Please sign in.");
+        router.push("/sign-in");
+      } else {
+        toast.error(res.data.message ?? "Something went wrong.");
+      }
+    } catch {
+      toast.error("Could not create account. Try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-[calc(100vh-4rem)] flex">
+      {/* Left decorative panel */}
+      <div className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 bg-primary/5 border-r px-10 py-12">
+        <div className="flex items-center gap-2">
+          <Code2 className="w-6 h-6 text-primary" />
+          <span className="font-bold text-lg">Solver</span>
+        </div>
+        <div className="space-y-6">
+          <h2 className="text-2xl font-semibold leading-snug">
+            Join thousands of developers solving problems together.
+          </h2>
+          <ul className="space-y-3 text-sm text-muted-foreground">
+            {[
+              "Post coding problems with screenshots",
+              "Get AI + community solutions instantly",
+              "Compete in LeetCode-style DSA contests",
+              "Practice Linux commands in the browser",
+            ].map((t) => (
+              <li key={t} className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                {t}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="text-xs text-muted-foreground">© 2026 Solver. All rights reserved.</p>
+      </div>
+
+      {/* Right — form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-10">
+        <div className="w-full max-w-[420px] space-y-5">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold">Create your account</h1>
+            <p className="text-muted-foreground text-sm">Fill in the details below to get started for free.</p>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* First + Last name */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-sm">First name</Label>
+                <Input {...register("firstname")} placeholder="John" className="h-10" />
+                {errors.firstname && <p className="text-xs text-red-500">{errors.firstname.message}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Last name</Label>
+                <Input {...register("lastname")} placeholder="Doe" className="h-10" />
+                {errors.lastname && <p className="text-xs text-red-500">{errors.lastname.message}</p>}
+              </div>
+            </div>
+
+            {/* Username */}
+            <div className="space-y-1.5">
+              <Label className="text-sm">Username</Label>
+              <Input
+                {...register("username")}
+                placeholder="johndoe"
+                className="h-10"
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <FieldMsg msg={usernameMessage} loading={isCheckingUsername} />
+              {errors.username && <p className="text-xs text-red-500">{errors.username.message}</p>}
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <Label className="text-sm">Email address</Label>
+              <Input
+                {...register("email")}
+                type="email"
+                placeholder="john@example.com"
+                className="h-10"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <FieldMsg msg={emailMessage} loading={isCheckingEmail} />
+              {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+            </div>
+
+            {/* Password */}
+            <div className="space-y-1.5">
+              <Label className="text-sm">Password</Label>
+              <Input {...register("password")} type="password" placeholder="Min. 8 characters" className="h-10" />
+              {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
+            </div>
+
+            <Button type="submit" className="w-full h-11" disabled={submitting}>
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create account"}
+            </Button>
+          </form>
+
+          <p className="text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link href="/sign-in" className="text-primary font-medium hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

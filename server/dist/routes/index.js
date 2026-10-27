@@ -18,6 +18,7 @@ const NotificationController_1 = __importDefault(require("../controllers/Notific
 const LeaderboardController_1 = __importDefault(require("../controllers/LeaderboardController"));
 const ContestController_1 = __importDefault(require("../controllers/ContestController"));
 const UserStatsController_1 = __importDefault(require("../controllers/UserStatsController"));
+const OtpController_1 = __importDefault(require("../controllers/OtpController"));
 const router = (0, express_1.Router)();
 // authentication
 router.post("/auth/createUser", Authcontrollers_1.default.createUser);
@@ -25,6 +26,8 @@ router.post("/auth/login", Authcontrollers_1.default.login);
 router.post("/auth/checkUsernameAvailable", Authcontrollers_1.default.checkUsernameAvailable);
 router.post("/auth/checkEmailAvailable", Authcontrollers_1.default.checkEmailAvailable);
 router.post("/auth/getUserByEmail", Authcontrollers_1.default.getUserByEmail);
+router.post("/auth/send-otp", OtpController_1.default.sendOtp);
+router.post("/auth/verify-otp", OtpController_1.default.verifyOtp);
 //chat group routers
 router.post("/chat-group", ChatGroupController_1.default.store); //create group
 router.get("/chat-groups/:user_id", ChatGroupController_1.default.index); //showing all group of user

@@ -9,6 +9,8 @@ export const LOGIN_USER_URL = AUTH_URL + "/login";
 export const CHECK_USERNAME_URL = AUTH_URL + "/checkUsernameAvailable";
 export const CHECK_EMAIL_URL = AUTH_URL + "/checkEmailAvailable";
 export const GETUSER_BY_EMAIL_URL = AUTH_URL + "/getUserByEmail";
+export const SEND_OTP_URL = AUTH_URL + "/send-otp";
+export const VERIFY_OTP_URL = AUTH_URL + "/verify-otp";
 
 // chat group route handler
 export const CREATE_CHAT_GROUP_URL = API_URL + "/chat-group";

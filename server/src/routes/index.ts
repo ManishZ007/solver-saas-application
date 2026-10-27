@@ -13,6 +13,7 @@ import NotificationController from "../controllers/NotificationController";
 import LeaderboardController from "../controllers/LeaderboardController";
 import ContestController from "../controllers/ContestController";
 import UserStatsController from "../controllers/UserStatsController";
+import OtpController from "../controllers/OtpController";
 const router = Router();
 
 // authentication
@@ -24,6 +25,8 @@ router.post(
 );
 router.post("/auth/checkEmailAvailable", AuthControllers.checkEmailAvailable);
 router.post("/auth/getUserByEmail", AuthControllers.getUserByEmail);
+router.post("/auth/send-otp", OtpController.sendOtp);
+router.post("/auth/verify-otp", OtpController.verifyOtp);
 
 //chat group routers
 router.post("/chat-group", ChatGroupController.store); //create group
