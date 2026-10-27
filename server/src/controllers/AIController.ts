@@ -46,6 +46,29 @@ Be concise. Return only valid JSON.`;
     }
   }
 
+  static async hint(request: Request, response: Response) {
+    const { title, description, constraints, language } = request.body;
+    if (!title || !description) {
+      return response.status(400).json({ success: false, message: "Problem details required." });
+    }
+
+    const prompt = `You are a helpful competitive programming mentor. Give a hint for this problem WITHOUT revealing the full solution or writing any code.
+
+Problem: ${title}
+Description: ${description}
+${constraints ? `Constraints: ${constraints}` : ""}
+Language: ${language ?? "any"}
+
+Give ONE concise hint (2-4 sentences) that guides the student toward the right approach. Mention the key algorithm or data structure to think about. Do NOT write code.`;
+
+    try {
+      const result = await model.generateContent(prompt);
+      return response.json({ success: true, hint: result.response.text() });
+    } catch {
+      return response.status(503).json({ success: false, message: "AI is busy. Try again." });
+    }
+  }
+
   static async question(request: Request, response: Response) {
     const { prompt } = request.body;
 

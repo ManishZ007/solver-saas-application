@@ -58,6 +58,10 @@ export const APP_CHAT_GROUP_URL = Env.APP_URL + "/dashboard/chat";
 //Ai
 export const AI_RESPONSE_URL = API_URL + "/ai-response";
 export const AI_JUDGE_URL = API_URL + "/ai-judge";
+export const AI_HINT_URL = API_URL + "/ai-hint";
+
+//User stats
+export const USER_STATS_URL = API_URL + "/user-stats";
 
 //Notifications
 export const NOTIFICATIONS_URL = API_URL + "/notifications";

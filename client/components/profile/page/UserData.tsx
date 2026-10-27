@@ -16,16 +16,25 @@ import {
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { Edit2, Loader2, Loader2Icon, Pencil, Trash2, User2 } from "lucide-react";
+import { Edit2, Loader2, Loader2Icon, Pencil, Trash2, User2, FileText, CheckCircle, Lightbulb, Star, Zap, Trophy } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { DELETE_POST } from "@/lib/apiEndPoints";
+import { DELETE_POST, USER_STATS_URL } from "@/lib/apiEndPoints";
 import { clearCache } from "@/actions/comman";
 import EditPostDialog from "../dialogs/EditPostDialog";
+
+type StatsType = {
+  totalPosts: number;
+  solvedPosts: number;
+  totalSolutions: number;
+  totalRatings: number;
+  contestPoints: number;
+  contestsJoined: number;
+};
 
 type UserDataProps = {
   user?: User;
@@ -38,6 +47,7 @@ type UserDataType = {
 };
 
 const UserData = ({ user, user_post }: UserDataProps) => {
+  const [stats, setStats] = useState<StatsType | null>(null);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   const [editingPost, setEditingPost] = useState<PostType | null>(null);
   const [userData, setUserData] = useState<UserDataType>({
@@ -58,6 +68,15 @@ const UserData = ({ user, user_post }: UserDataProps) => {
       email: user?.email,
     },
   });
+
+  useEffect(() => {
+    if (user?.id) {
+      axios
+        .get<{ success: boolean; stats: StatsType }>(`${USER_STATS_URL}?user_id=${user.id}`)
+        .then((r) => { if (r.data.success) setStats(r.data.stats); })
+        .catch(() => {});
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     const checkUsernameAvailable = async () => {
@@ -163,6 +182,17 @@ const UserData = ({ user, user_post }: UserDataProps) => {
     return `${truncatedWords}...`;
   }
 
+  const statCards = stats
+    ? [
+        { icon: <FileText className="w-4 h-4 text-blue-500" />, label: "Posts", value: stats.totalPosts },
+        { icon: <CheckCircle className="w-4 h-4 text-green-500" />, label: "Solved", value: stats.solvedPosts },
+        { icon: <Lightbulb className="w-4 h-4 text-yellow-500" />, label: "Solutions", value: stats.totalSolutions },
+        { icon: <Star className="w-4 h-4 text-orange-400" />, label: "Ratings Given", value: stats.totalRatings },
+        { icon: <Zap className="w-4 h-4 text-purple-500" />, label: "Contest Pts", value: stats.contestPoints },
+        { icon: <Trophy className="w-4 h-4 text-amber-500" />, label: "Contests", value: stats.contestsJoined },
+      ]
+    : [];
+
   return (
     <section className="px-4 py-2 flex flex-col md:flex-row">
       <div className="p-3 flex  gap-4 flex-col items-center ">
@@ -212,6 +242,25 @@ const UserData = ({ user, user_post }: UserDataProps) => {
             Edit profile
           </Button>
         </div>
+
+        {/* Stats grid */}
+        {stats ? (
+          <div className="w-full grid grid-cols-3 gap-2">
+            {statCards.map((s) => (
+              <div key={s.label} className="flex flex-col items-center justify-center border rounded-xl py-2 px-1 bg-muted/40">
+                {s.icon}
+                <span className="text-base font-bold mt-1">{s.value}</span>
+                <span className="text-[10px] text-muted-foreground text-center leading-tight">{s.label}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="w-full grid grid-cols-3 gap-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-16 bg-muted rounded-xl animate-pulse" />
+            ))}
+          </div>
+        )}
         {isEditOpen && (
           <>
             <div className="w-full  items-start justify-start">

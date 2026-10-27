@@ -68,7 +68,7 @@ export default function CreateContestPage() {
         title,
         description,
         creator_id: user.id,
-        creator_username: user.username ?? user.name,
+        creator_username: user.username,
         start_time: startTime,
         end_time: endTime,
         problems,

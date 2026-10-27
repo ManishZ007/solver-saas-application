@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { CONTEST_URL, CONTEST_SUBMIT_URL, CONTEST_SUBMISSIONS_URL } from "@/lib/apiEndPoints";
+import { CONTEST_URL, CONTEST_SUBMIT_URL, CONTEST_SUBMISSIONS_URL, AI_HINT_URL } from "@/lib/apiEndPoints";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { ChevronRight, Send, CheckCircle, XCircle, AlertCircle, History } from "lucide-react";
+import { ChevronRight, Send, CheckCircle, XCircle, AlertCircle, History, Lightbulb, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import { formatDistanceToNow } from "date-fns";
@@ -52,6 +52,9 @@ export default function ProblemPage() {
   const [language, setLanguage] = useState("javascript");
   const [code, setCode] = useState(STARTERS["javascript"]);
   const [submitting, setSubmitting] = useState(false);
+  const [hinting, setHinting] = useState(false);
+  const [hint, setHint] = useState<string | null>(null);
+  const [timeLeft, setTimeLeft] = useState<string>("");
   const [result, setResult] = useState<null | {
     score: number; status: string; feedback: string;
     time_complexity: string; earned_points: number; total_points: number;
@@ -85,6 +88,43 @@ export default function ProblemPage() {
       .catch(() => {});
   }, [contestId, problemId, user?.id, result]);
 
+  // Countdown timer
+  useEffect(() => {
+    if (!contest) return;
+    const tick = () => {
+      const now = new Date();
+      const end = new Date(contest.end_time);
+      const diff = end.getTime() - now.getTime();
+      if (diff <= 0) { setTimeLeft("Ended"); return; }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(`${h > 0 ? `${h}h ` : ""}${m}m ${s}s`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [contest]);
+
+  const handleHint = async () => {
+    if (!problem) return;
+    setHinting(true);
+    setHint(null);
+    try {
+      const r = await axios.post<{ success: boolean; hint: string }>(AI_HINT_URL, {
+        title: problem.title,
+        description: problem.description,
+        constraints: problem.constraints,
+        language,
+      });
+      if (r.data.success) setHint(r.data.hint);
+    } catch {
+      setHint("Could not get a hint right now. Try again.");
+    } finally {
+      setHinting(false);
+    }
+  };
+
   const handleLangChange = (lang: string) => {
     setLanguage(lang);
     setCode(STARTERS[lang] ?? "");
@@ -104,7 +144,7 @@ export default function ProblemPage() {
         contest_id: contestId,
         problem_id: problemId,
         user_id: user.id,
-        username: user.username ?? user.name,
+        username: user.username,
         language,
         code,
       });
@@ -146,6 +186,18 @@ export default function ProblemPage() {
         </button>
         <ChevronRight className="w-3.5 h-3.5" />
         <span className="text-foreground font-medium truncate max-w-[150px]">{problem.title}</span>
+        {timeLeft && timeLeft !== "Ended" && (
+          <span className={`ml-auto flex items-center gap-1 font-mono font-semibold text-sm px-2 py-0.5 rounded-lg ${
+            timeLeft.startsWith("0m") || (timeLeft.includes("m") && parseInt(timeLeft) <= 5)
+              ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+              : "bg-muted text-foreground"
+          }`}>
+            <Clock className="w-3.5 h-3.5" /> {timeLeft}
+          </span>
+        )}
+        {timeLeft === "Ended" && (
+          <span className="ml-auto text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-lg">Contest Ended</span>
+        )}
       </div>
 
       {/* Main split */}
@@ -180,6 +232,26 @@ export default function ProblemPage() {
               <pre className="text-xs bg-muted rounded-lg p-3 whitespace-pre-wrap font-mono">{problem.examples}</pre>
             </div>
           )}
+
+          {/* AI Hint */}
+          <div className="border-t pt-3">
+            <button
+              onClick={handleHint}
+              disabled={hinting}
+              className="flex items-center gap-1.5 text-sm text-yellow-600 dark:text-yellow-400 hover:opacity-80 transition-opacity disabled:opacity-50"
+            >
+              <Lightbulb className="w-4 h-4" />
+              {hinting ? "Getting hint..." : "Get AI Hint"}
+            </button>
+            {hint && (
+              <div className="mt-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3 text-sm text-yellow-900 dark:text-yellow-200">
+                <p className="font-medium mb-1 flex items-center gap-1">
+                  <Lightbulb className="w-3.5 h-3.5" /> Hint
+                </p>
+                <p className="text-xs leading-relaxed">{hint}</p>
+              </div>
+            )}
+          </div>
 
           {/* Tabs: Problem / Submissions */}
           <div className="border-t pt-4">

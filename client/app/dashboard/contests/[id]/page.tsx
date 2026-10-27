@@ -55,7 +55,7 @@ export default function ContestDetailPage() {
       await axios.post(CONTEST_JOIN_URL, {
         contest_id: contest.id,
         user_id: user.id,
-        username: user.username ?? user.name,
+        username: user.username,
       });
       setJoined(true);
       setContest((prev) =>
@@ -64,7 +64,7 @@ export default function ContestDetailPage() {
               ...prev,
               Participants: [
                 ...(prev.Participants ?? []),
-                { id: "new", contest_id: prev.id, user_id: user.id!, username: user.username ?? user.name ?? "", total_points: 0, joined_at: new Date().toISOString() },
+                { id: "new", contest_id: prev.id, user_id: user.id!, username: user.username ?? "", total_points: 0, joined_at: new Date().toISOString() },
               ],
             }
           : prev

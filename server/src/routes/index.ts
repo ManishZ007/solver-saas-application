@@ -12,6 +12,7 @@ import AiController from "../controllers/AIController";
 import NotificationController from "../controllers/NotificationController";
 import LeaderboardController from "../controllers/LeaderboardController";
 import ContestController from "../controllers/ContestController";
+import UserStatsController from "../controllers/UserStatsController";
 const router = Router();
 
 // authentication
@@ -66,6 +67,10 @@ router.post("/update-profile", UserController.updateUser);
 //Ai
 router.post("/ai-response", AiController.question);
 router.post("/ai-judge", AiController.judgeSolutions);
+router.post("/ai-hint", AiController.hint);
+
+//User stats
+router.get("/user-stats", UserStatsController.index);
 
 //Notifications
 router.get("/notifications", NotificationController.index);

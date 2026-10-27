@@ -17,6 +17,7 @@ const AIController_1 = __importDefault(require("../controllers/AIController"));
 const NotificationController_1 = __importDefault(require("../controllers/NotificationController"));
 const LeaderboardController_1 = __importDefault(require("../controllers/LeaderboardController"));
 const ContestController_1 = __importDefault(require("../controllers/ContestController"));
+const UserStatsController_1 = __importDefault(require("../controllers/UserStatsController"));
 const router = (0, express_1.Router)();
 // authentication
 router.post("/auth/createUser", Authcontrollers_1.default.createUser);
@@ -58,6 +59,9 @@ router.post("/update-profile", UserController_1.default.updateUser);
 //Ai
 router.post("/ai-response", AIController_1.default.question);
 router.post("/ai-judge", AIController_1.default.judgeSolutions);
+router.post("/ai-hint", AIController_1.default.hint);
+//User stats
+router.get("/user-stats", UserStatsController_1.default.index);
 //Notifications
 router.get("/notifications", NotificationController_1.default.index);
 router.post("/notifications/mark-read", NotificationController_1.default.markRead);
