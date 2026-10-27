@@ -18,11 +18,15 @@ import prisma from "./config/prisma";
 const app: Application = express();
 const PORT = process.env.PORT || 8000;
 const httpServer = createServer(app);
+const ALLOWED_ORIGINS = [
+  "https://admin.socket.io",
+  "http://localhost:3000",
+  "http://localhost:3002",
+  process.env.CLIENT_SIDE_BASE_URL,
+].filter(Boolean) as string[];
+
 const io = new Server(httpServer, {
-  cors: {
-    origin: ["https://admin.socket.io", "http://localhost:3000", "http://localhost:3002"],
-    credentials: true,
-  },
+  cors: { origin: ALLOWED_ORIGINS, credentials: true },
   adapter: createAdapter(redis),
 });
 
@@ -41,7 +45,7 @@ const storage = multer.diskStorage({
     file: Express.Multer.File,
     cb: (error: Error | null, destination: string) => void
   ) {
-    const uploadPath = path.resolve(__dirname, "../dist/uploads");
+    const uploadPath = process.env.UPLOAD_DIR || path.resolve(__dirname, "../dist/uploads");
 
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
@@ -61,7 +65,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 //Middleware
-app.use(cors());
+app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));

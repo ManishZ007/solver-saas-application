@@ -23,11 +23,14 @@ const prisma_1 = __importDefault(require("./config/prisma"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 8000;
 const httpServer = (0, http_1.createServer)(app);
+const ALLOWED_ORIGINS = [
+    "https://admin.socket.io",
+    "http://localhost:3000",
+    "http://localhost:3002",
+    process.env.CLIENT_SIDE_BASE_URL,
+].filter(Boolean);
 const io = new socket_io_1.Server(httpServer, {
-    cors: {
-        origin: ["https://admin.socket.io", "http://localhost:3000", "http://localhost:3002"],
-        credentials: true,
-    },
+    cors: { origin: ALLOWED_ORIGINS, credentials: true },
     adapter: (0, redis_streams_adapter_1.createAdapter)(redis_1.default),
 });
 exports.io = io;
@@ -39,7 +42,7 @@ exports.io = io;
 //multer
 const storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
-        const uploadPath = path_1.default.resolve(__dirname, "../dist/uploads");
+        const uploadPath = process.env.UPLOAD_DIR || path_1.default.resolve(__dirname, "../dist/uploads");
         if (!fs_1.default.existsSync(uploadPath)) {
             fs_1.default.mkdirSync(uploadPath, { recursive: true });
         }
@@ -53,7 +56,7 @@ const storage = multer_1.default.diskStorage({
 });
 const upload = (0, multer_1.default)({ storage: storage });
 //Middleware
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({ origin: ALLOWED_ORIGINS, credentials: true }));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "/uploads")));
